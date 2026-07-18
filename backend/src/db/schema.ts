@@ -20,7 +20,7 @@ import { defineRelations } from "drizzle-orm";
 //? ENUMS
 // ─────────────────────────────────────────────────────────────
 
-export const userStatus = pgEnum("entity_status", ["dormant", "disrupted","uncertain"]);
+export const userStatus = pgEnum("user_status", ["dormant", "disrupted","uncertain"]);
 export const entityStatusEnum = pgEnum("entity_status", ["active", "archived"]);
 export const reflectionTypeEnum = pgEnum("reflection_type", ["goal", "pain_point", "dream"]);
 export const habitTargetTypeEnum = pgEnum("habit_target_type", ["boolean", "count", "duration"]);
