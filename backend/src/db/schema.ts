@@ -16,7 +16,11 @@ import {
 } from "drizzle-orm/pg-core";
 import { defineRelations } from "drizzle-orm";
 
+// ─────────────────────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────────────────────
 
+export const userStatus = pgEnum("entity_status", ["dormant", "disrupted","uncertain"]);
 export const entityStatusEnum = pgEnum("entity_status", ["active", "archived"]);
 export const reflectionTypeEnum = pgEnum("reflection_type", ["goal", "pain_point", "dream"]);
 export const habitTargetTypeEnum = pgEnum("habit_target_type", ["boolean", "count", "duration"]);
@@ -42,7 +46,7 @@ export const users = pgTable("users", {
   googleId: text("google_id").notNull().unique(),
   email: text("email").notNull().unique(),
   name: text("name").notNull(),
-  avatarUrl: text("avatar_url"),
+  status: userStatus("status").notNull(),
   onboardingCompletedAt: timestamp("onboarding_completed_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -367,12 +371,16 @@ export const userApiKeys = pgTable(
 );
 
 // ─────────────────────────────────────────────────────────────
-// Relation (query-builder ergonomics)
+// RELATIONS (rc.4 relational API — defineRelations)
+//
+// IMPORTANT: unlike the old `relations()` helper, rc.4 requires BOTH sides
+// of every relation to be declared explicitly. A `many` on the parent with
+// no matching `one` (with from/to) on the child fails at db:push with
+// "not enough data provided to build the relation". Every FK below has
+// its `one` side declared on the child, matched by a `many` on the parent.
 // ─────────────────────────────────────────────────────────────
 
-
-
-export const relations = defineRelations(
+export const dbRelations = defineRelations(
   {
     users,
     reflections,
@@ -395,6 +403,7 @@ export const relations = defineRelations(
       reflections: r.many.reflections(),
       routineProfiles: r.many.routineProfiles(),
       habits: r.many.habits(),
+      habitLogs: r.many.habitLogs(),
       plans: r.many.plans(),
       todos: r.many.todos(),
       aiReports: r.many.aiReports(),
@@ -403,16 +412,36 @@ export const relations = defineRelations(
       userApiKeys: r.many.userApiKeys(),
     },
 
+    reflections: {
+      user: r.one.users({
+        from: r.reflections.userId,
+        to: r.users.id,
+      }),
+      plans: r.many.plans(),
+    },
+
+    routineProfiles: {
+      user: r.one.users({
+        from: r.routineProfiles.userId,
+        to: r.users.id,
+      }),
+      blocks: r.many.routineBlocks(),
+    },
+
+    routineBlocks: {
+      routineProfile: r.one.routineProfiles({
+        from: r.routineBlocks.routineProfileId,
+        to: r.routineProfiles.id,
+      }),
+    },
+
     habits: {
       user: r.one.users({
         from: r.habits.userId,
         to: r.users.id,
       }),
       logs: r.many.habitLogs(),
-      streak: r.one.habitStreaks({
-        from: r.habits.id,
-        to: r.habitStreaks.habitId,
-      }),
+      streak: r.one.habitStreaks(),
     },
 
     habitLogs: {
@@ -423,6 +452,13 @@ export const relations = defineRelations(
       user: r.one.users({
         from: r.habitLogs.userId,
         to: r.users.id,
+      }),
+    },
+
+    habitStreaks: {
+      habit: r.one.habits({
+        from: r.habitStreaks.habitId,
+        to: r.habits.id,
       }),
     },
 
@@ -439,12 +475,29 @@ export const relations = defineRelations(
       todos: r.many.todos(),
     },
 
-    routineProfiles: {
+    planItems: {
+      plan: r.one.plans({
+        from: r.planItems.planId,
+        to: r.plans.id,
+      }),
+    },
+
+    todos: {
       user: r.one.users({
-        from: r.routineProfiles.userId,
+        from: r.todos.userId,
         to: r.users.id,
       }),
-      blocks: r.many.routineBlocks(),
+      plan: r.one.plans({
+        from: r.todos.planId,
+        to: r.plans.id,
+      }),
+    },
+
+    aiReports: {
+      user: r.one.users({
+        from: r.aiReports.userId,
+        to: r.users.id,
+      }),
     },
 
     emergencyChatSessions: {
@@ -453,6 +506,27 @@ export const relations = defineRelations(
         to: r.users.id,
       }),
       messages: r.many.emergencyChatMessages(),
+    },
+
+    emergencyChatMessages: {
+      session: r.one.emergencyChatSessions({
+        from: r.emergencyChatMessages.sessionId,
+        to: r.emergencyChatSessions.id,
+      }),
+    },
+
+    aiUsageQuotas: {
+      user: r.one.users({
+        from: r.aiUsageQuotas.userId,
+        to: r.users.id,
+      }),
+    },
+
+    userApiKeys: {
+      user: r.one.users({
+        from: r.userApiKeys.userId,
+        to: r.users.id,
+      }),
     },
   }),
 );
