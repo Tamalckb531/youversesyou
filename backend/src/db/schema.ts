@@ -17,7 +17,7 @@ import {
 import { defineRelations } from "drizzle-orm";
 
 // ─────────────────────────────────────────────────────────────
-// ENUMS
+//? ENUMS
 // ─────────────────────────────────────────────────────────────
 
 export const userStatus = pgEnum("entity_status", ["dormant", "disrupted","uncertain"]);
@@ -38,7 +38,7 @@ export const chatRoleEnum = pgEnum("chat_role", ["user", "assistant"]);
 export const apiKeyProviderEnum = pgEnum("api_key_provider", ["openai", "anthropic", "google", "other"]);
 
 // ─────────────────────────────────────────────────────────────
-// USERS
+//? USERS
 // ─────────────────────────────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -53,7 +53,7 @@ export const users = pgTable("users", {
 });
 
 // ─────────────────────────────────────────────────────────────
-// REFLECTIONS — Goals / Pain Points / Dreams (unified, versioned)
+//? REFLECTIONS — Goals / Pain Points / Dreams (unified, versioned)
 // Business rule: max 5 active per (userId, type) — enforced in service layer.
 // Business rule: 6-month edit lock — enforced by reading latest active row's
 // createdAt in service layer; editing = archive old row + insert new row.
@@ -108,6 +108,7 @@ export const routineProfiles = pgTable(
   ],
 );
 
+//TODO: Some routines are must to follow like schools and stuff and some can be extended. We can add this feature here 
 export const routineBlocks = pgTable(
   "routine_blocks",
   {
@@ -152,7 +153,7 @@ export const habits = pgTable(
   ],
 );
 
-// One row per habit per day — this table IS the heatmap source of truth.
+//! One row per habit per day — this table IS the heatmap source of truth.
 // Unique (habitId, date) prevents double-checkins from corrupting streaks.
 export const habitLogs = pgTable(
   "habit_logs",
