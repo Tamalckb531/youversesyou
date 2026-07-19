@@ -1,17 +1,15 @@
 {
   "name": "@tamaldip/uvsu-common",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Shared types and zod schemas",
   "license": "MIT",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "default": "./dist/index.js"
     }
   },
   "files": [
@@ -19,7 +17,7 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run clean && tsup",
+    "build": "npm run clean && tsc",
     "release": "standard-version",
     "publish-package": "npm publish --access public",
     "install-frontend": "cd ../frontend && npm install @tamaldip/uvsu-common@latest",
