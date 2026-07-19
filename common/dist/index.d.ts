@@ -1,14 +1,9 @@
-// user.ts
-
 import { z } from "zod";
-
-export const LoginSchema = z.object({
-    email: z.email(),
-    password: z.string().min(8)
-});
-
+export declare const LoginSchema: z.ZodObject<{
+    email: z.ZodEmail;
+    password: z.ZodString;
+}, z.core.$strip>;
 export type LoginInput = z.infer<typeof LoginSchema>;
-
 export interface User {
     id: string;
     name: string;
