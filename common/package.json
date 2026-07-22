@@ -1,6 +1,6 @@
 {
   "name": "@tamaldip/uvsu-common",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Shared types and zod schemas",
   "license": "MIT",
   "type": "module",
@@ -23,7 +23,7 @@
     "install-frontend": "cd ../frontend && npm install @tamaldip/uvsu-common@latest",
     "install-backend": "cd ../backend && npm install @tamaldip/uvsu-common@latest --legacy-peer-deps",
     "sync": "concurrently \"npm:install-frontend\" \"npm:install-backend\"",
-    "update": "npm run release && npm run build && npm run publish-package && npm run sync"
+    "update": "npm run release && npm run build && npm run publish-package && sleep 2 && npm run sync"
   },
   "dependencies": {
     "zod": "^4"
