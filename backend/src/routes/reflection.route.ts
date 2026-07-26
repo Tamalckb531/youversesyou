@@ -3,10 +3,11 @@ import { authController } from "../controller/auth.controller";
 import {
   type AuthEnv,
 } from "../middleware/auth.middleware";
+import { ReflectionsGetController } from "../controller/reflection.controller";
 
 export const reflectionRoutes = new Hono<AuthEnv>();
 
-reflectionRoutes.get("/", authController.me);
+reflectionRoutes.get("/", ReflectionsGetController);
 reflectionRoutes.post("/", authController.me);
 reflectionRoutes.get("/:id", authController.me);
 reflectionRoutes.patch("/:id", authController.me);

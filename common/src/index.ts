@@ -29,3 +29,25 @@ export const authErrorSchema = z.object({
   message: z.string(),
 });
 export type AuthError = z.infer<typeof authErrorSchema>;
+
+
+//! Reflection types and schemas 
+export const reflectionTypeSchema = z.enum(["goal", "pain_point", "dream"]);
+export const entityStatusSchema = z.enum(["active", "archived"]);
+
+export const reflectionMetadataSchema = z.record(z.string(), z.unknown()).optional().nullable();
+
+export const reflectionSchema = z.object({
+  id: z.string().uuid(),
+  userId: z.string().uuid(),
+  type: reflectionTypeSchema,
+  title: z.string().min(1).max(255),
+  description: z.string().max(5000).optional().nullable(),
+  targetDate: z.coerce.date().optional().nullable(),
+  metadata: reflectionMetadataSchema,
+  status: entityStatusSchema,
+  slotIndex: z.number().int().min(1).max(5).optional().nullable(),
+  previousVersionId: z.string().uuid().optional().nullable(),
+  createdAt: z.coerce.date(),
+  archivedAt: z.coerce.date().optional().nullable(),
+});
