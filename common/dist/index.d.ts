@@ -32,3 +32,49 @@ export declare const authErrorSchema: z.ZodObject<{
     message: z.ZodString;
 }, z.core.$strip>;
 export type AuthError = z.infer<typeof authErrorSchema>;
+export declare const reflectionTypeSchema: z.ZodEnum<{
+    dream: "dream";
+    goal: "goal";
+    pain_point: "pain_point";
+}>;
+export declare const entityStatusSchema: z.ZodEnum<{
+    active: "active";
+    archived: "archived";
+}>;
+export declare const reflectionMetadataSchema: z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
+export declare const reflectionSchema: z.ZodObject<{
+    id: z.ZodString;
+    userId: z.ZodString;
+    type: z.ZodEnum<{
+        dream: "dream";
+        goal: "goal";
+        pain_point: "pain_point";
+    }>;
+    title: z.ZodString;
+    description: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+    targetDate: z.ZodNullable<z.ZodOptional<z.ZodCoercedDate<unknown>>>;
+    metadata: z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
+    status: z.ZodEnum<{
+        active: "active";
+        archived: "archived";
+    }>;
+    slotIndex: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
+    previousVersionId: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+    createdAt: z.ZodCoercedDate<unknown>;
+    archivedAt: z.ZodNullable<z.ZodOptional<z.ZodCoercedDate<unknown>>>;
+}, z.core.$strip>;
+export type reflectionType = z.infer<typeof reflectionSchema>;
+export declare const createReflectionSchema: z.ZodObject<{
+    userId: z.ZodString;
+    type: z.ZodEnum<{
+        dream: "dream";
+        goal: "goal";
+        pain_point: "pain_point";
+    }>;
+    title: z.ZodString;
+    description: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+    targetDate: z.ZodNullable<z.ZodOptional<z.ZodCoercedDate<unknown>>>;
+    metadata: z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>>;
+    slotIndex: z.ZodNullable<z.ZodOptional<z.ZodNumber>>;
+}, z.core.$strip>;
+export type createReflectionType = z.infer<typeof createReflectionSchema>;

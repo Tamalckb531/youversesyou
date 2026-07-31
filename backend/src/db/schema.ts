@@ -119,7 +119,7 @@ export const reflections = pgTable(
     // type-specific extras (e.g. dream.estimatedCost) without schema churn
     metadata: jsonb("metadata"),
     status: entityStatusEnum("status").notNull().default("active"),
-    slotIndex: smallint("slot_index"), // 1–5, display ordering only, not DB-enforced
+    slotIndex: smallint("slot_index").notNull(), // 1–5, display ordering only, not DB-enforced
     previousVersionId: uuid("previous_version_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     archivedAt: timestamp("archived_at", { withTimezone: true }),

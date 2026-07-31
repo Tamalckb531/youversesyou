@@ -46,8 +46,18 @@ export const reflectionSchema = z.object({
   targetDate: z.coerce.date().optional().nullable(),
   metadata: reflectionMetadataSchema,
   status: entityStatusSchema,
-  slotIndex: z.number().int().min(1).max(5).optional().nullable(),
+  slotIndex: z.number().int().min(1).max(5).optional(),
   previousVersionId: z.string().uuid().optional().nullable(),
   createdAt: z.coerce.date(),
   archivedAt: z.coerce.date().optional().nullable(),
 });
+export type reflectionType = z.infer<typeof reflectionSchema>;
+
+export const createReflectionSchema = reflectionSchema.omit({
+  id: true,
+  status: true,
+  previousVersionId: true,
+  createdAt: true,
+  archivedAt: true,
+});
+export type createReflectionType = z.infer<typeof createReflectionSchema>;
