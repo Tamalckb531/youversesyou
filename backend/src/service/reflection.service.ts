@@ -21,6 +21,10 @@ export const reflectionService = {
         return ReflectionRepository.findAllByUserId(userId);
     }, 
 
+    async oneForUser(reflectionId:string, userId: string) {
+        return ReflectionRepository.findOneByUserId(reflectionId, userId);
+    }, 
+
     async bulkCreate(userId: string, items: createReflectionType[]) {
         const rows = items.map((item, _i) => toInsertRow(item, userId));
         return ReflectionRepository.bulkCreate(rows);

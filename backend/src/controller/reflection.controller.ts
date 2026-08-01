@@ -23,6 +23,29 @@ export const ReflectionsGetController = async (c:Context)=> {
     }
 }
 
+export const ReflectionsGetOneController = async (c: Context) => {
+    try {
+        const id = c.req.param("id");
+        const userId = c.get("user");
+
+        if (!id) return c.json({ success: false, message: "No reflection detected" }, 400);
+        if (!userId) return c.json({ success: false, message: "No id detected" }, 400);
+
+        const items = reflectionService.oneForUser(id, userId)
+        
+        return c.json({
+            success: true,
+            data: items,
+        })
+    }
+    catch (err) {
+        return c.json({
+            success: false,
+            message: err instanceof Error ? err.message : "Something went wrong"
+        }, 500); 
+    }
+}
+
 export const ReflectionsPostController = async (c: Context) => {
     try {
         const userId = c.get("user");
