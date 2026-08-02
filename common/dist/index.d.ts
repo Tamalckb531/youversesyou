@@ -63,6 +63,7 @@ export declare const reflectionSchema: z.ZodObject<{
     slotIndex: z.ZodNumber;
     previousVersionId: z.ZodNullable<z.ZodOptional<z.ZodUUID>>;
     createdAt: z.ZodCoercedDate<unknown>;
+    updatedAt: z.ZodCoercedDate<unknown>;
     archivedAt: z.ZodNullable<z.ZodOptional<z.ZodCoercedDate<unknown>>>;
 }, z.core.$strip>;
 export type reflectionType = z.infer<typeof reflectionSchema>;
@@ -92,3 +93,21 @@ export declare const bulkCreateReflectionSchema: z.ZodArray<z.ZodObject<{
     slotIndex: z.ZodNumber;
 }, z.core.$strip>>;
 export type bulkCreateReflectionType = z.infer<typeof bulkCreateReflectionSchema>;
+export declare const updateReflectionSchema: z.ZodObject<{
+    type: z.ZodOptional<z.ZodEnum<{
+        dream: "dream";
+        goal: "goal";
+        pain_point: "pain_point";
+    }>>;
+    title: z.ZodOptional<z.ZodString>;
+    description: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodString>>>;
+    targetDate: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodCoercedDate<unknown>>>>;
+    metadata: z.ZodOptional<z.ZodNullable<z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodUnknown>>>>;
+    status: z.ZodOptional<z.ZodEnum<{
+        active: "active";
+        archived: "archived";
+    }>>;
+    slotIndex: z.ZodOptional<z.ZodNumber>;
+    updatedAt: z.ZodOptional<z.ZodCoercedDate<unknown>>;
+}, z.core.$strip>;
+export type updateReflectionSchemaType = z.infer<typeof updateReflectionSchema>;

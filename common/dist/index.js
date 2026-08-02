@@ -36,14 +36,25 @@ export const reflectionSchema = z.object({
     slotIndex: z.number().int().min(1).max(5),
     previousVersionId: z.uuid().optional().nullable(),
     createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
     archivedAt: z.coerce.date().optional().nullable(),
 });
+//? Creation
 export const createReflectionSchema = reflectionSchema.omit({
     id: true,
     userId: true,
     status: true,
     previousVersionId: true,
     createdAt: true,
+    updatedAt: true,
     archivedAt: true,
 });
 export const bulkCreateReflectionSchema = z.array(createReflectionSchema).min(1);
+//? updates
+export const updateReflectionSchema = reflectionSchema.omit({
+    id: true,
+    userId: true,
+    previousVersionId: true,
+    createdAt: true,
+    archivedAt: true,
+}).partial();
