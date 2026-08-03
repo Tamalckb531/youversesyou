@@ -4,7 +4,8 @@ import { bulkCreateReflectionSchema, updateReflectionSchema } from "@tamaldip/uv
 
 export const ReflectionsGetController = async (c:Context)=> {
     try {
-        const userId = c.get("user");
+        const user = c.get("user");
+        const userId = user.id;
 
         if (!userId) return c.json({ success: false, message: "No id detected" }, 400);
 
@@ -27,7 +28,9 @@ export const ReflectionsGetController = async (c:Context)=> {
 export const ReflectionsGetOneController = async (c: Context) => {
     try {
         const id = c.req.param("id");
-        const userId = c.get("user");
+        
+        const user = c.get("user");
+        const userId = user.id;
 
         if (!id) return c.json({ success: false, message: "No reflection detected" }, 400);
         if (!userId) return c.json({ success: false, message: "No id detected" }, 400);
@@ -50,7 +53,8 @@ export const ReflectionsGetOneController = async (c: Context) => {
 
 export const ReflectionsPostController = async (c: Context) => {
     try {
-        const userId = c.get("user");
+        const user = c.get("user");
+        const userId = user.id;
 
         if (!userId) return c.json({ success: false, message: "No id detected" }, 400);
 
@@ -83,7 +87,9 @@ export const ReflectionsPostController = async (c: Context) => {
 export const ReflectionsPatchController = async (c: Context) => {
     try {
         const id = c.req.param("id");
-        const userId = c.get("user");
+
+        const user = c.get("user");
+        const userId = user.id;
 
         if (!id) return c.json({ success: false, message: "No reflection detected" }, 400);
         if (!userId) return c.json({ success: false, message: "No id detected" }, 400);
