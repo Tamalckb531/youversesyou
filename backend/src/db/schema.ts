@@ -101,7 +101,7 @@ export const verification = pgTable("verification", {
 // ─────────────────────────────────────────────────────────────
 //? REFLECTIONS — Goals / Pain Points / Dreams (unified, versioned)
 // Business rule: max 5 active per (userId, type) — enforced in service layer.
-// Business rule: 6-month edit lock — enforced by reading latest active row's
+// Business rule: 4-month edit lock — enforced by reading latest active row's
 // createdAt in service layer; editing = archive old row + insert new row.
 // ─────────────────────────────────────────────────────────────
 
@@ -119,9 +119,10 @@ export const reflections = pgTable(
     // type-specific extras (e.g. dream.estimatedCost) without schema churn
     metadata: jsonb("metadata"),
     status: entityStatusEnum("status").notNull().default("active"),
-    slotIndex: smallint("slot_index"), // 1–5, display ordering only, not DB-enforced
+    slotIndex: smallint("slot_index").notNull(), // 1–5, display ordering only, not DB-enforced
     previousVersionId: uuid("previous_version_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
   },
   (table) => [
