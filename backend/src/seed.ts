@@ -12,6 +12,17 @@ export const TEST_USER = {
   onboardingCompletedAt: new Date(),
 };
 
+export const TEST_MIDDLEWARE_USER = {
+  id: "11111111-1111-1111-1111-111111111111",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: "test@example.com",
+  emailVerified: true,
+  name: "Test User",
+  status: "pending" as const,
+  onboardingCompletedAt: new Date(),
+};
+
 export async function seed() {
   // Clear old data
   await db.delete(reflections);

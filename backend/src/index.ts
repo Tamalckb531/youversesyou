@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { authRoutes } from './routes/auth.route';
 import { reflectionRoutes } from './routes/reflection.route';
 
-const app = new Hono()
+export const app = new Hono()
 
 app.get('/health', (c) => {
   return c.text('Backend is running healthy')
@@ -19,3 +19,4 @@ serve({
 }, (info) => {
   console.log(`Server is running on http://localhost:${info.port}`)
 })
+
