@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { db } from "./db";
+import { getDb } from "./db";
 import { reflections, users } from "./db/schema";
 
 
@@ -25,11 +25,11 @@ export const TEST_MIDDLEWARE_USER = {
 
 export async function seed() {
   // Clear old data
-  await db.delete(reflections);
-  await db.delete(users);
+  await getDb().delete(reflections);
+  await getDb().delete(users);
 
   // Insert static user
-  await db.insert(users).values(TEST_USER);
+  await getDb().insert(users).values(TEST_USER);
 
   const reflectionRows = [];
 
@@ -81,7 +81,7 @@ export async function seed() {
     });
   }
 
-  await db.insert(reflections).values(reflectionRows);
+  await getDb().insert(reflections).values(reflectionRows);
 
   console.log("✅ Test database seeded");
 }

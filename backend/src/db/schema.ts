@@ -122,7 +122,7 @@ export const reflections = pgTable(
     slotIndex: smallint("slot_index").notNull(), // 1–5, display ordering only, not DB-enforced
     previousVersionId: uuid("previous_version_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-    updatedAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
   },
   (table) => [

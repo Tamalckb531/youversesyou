@@ -1,16 +1,16 @@
 import { eq } from "drizzle-orm";
-import { db } from "../db/index";
+import { getDb } from "../db/index";
 import { users, session } from "../db/schema";
 import type { userStatus } from "@tamaldip/uvsu-common";
 
 export const authRepository = {
   async findUserById(userId: string) {
-    const [row] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    const [row] = await getDb().select().from(users).where(eq(users.id, userId)).limit(1);
     return row ?? null;
   },
 
   async markOnboardingComplete(userId: string) {
-    const [row] = await db
+    const [row] = await getDb()
       .update(users)
       .set({ status: "pending", onboardingCompletedAt: new Date(), updatedAt: new Date() })
       .where(eq(users.id, userId))
@@ -19,7 +19,7 @@ export const authRepository = {
   },
 
   async setStatus(userId: string, status: userStatus) {
-    const [row] = await db
+    const [row] = await getDb()
       .update(users)
       .set({ status, updatedAt: new Date() })
       .where(eq(users.id, userId))
@@ -29,6 +29,6 @@ export const authRepository = {
 
   //? Important for logging out from specific device and stuff
   async revokeAllSessions(userId: string) {
-    await db.delete(session).where(eq(session.userId, userId));
+    await getDb().delete(session).where(eq(session.userId, userId));
   },
 };

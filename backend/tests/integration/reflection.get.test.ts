@@ -8,7 +8,7 @@ describe("GET /api/v1/reflections", () => {
     });
 
     it("should return all reflections of the test users", async () => {
-        const res = await app.request("/api/v1/reflections", {
+        const res = await app.request("/api/v1/reflections/", {
             method: "GET",
         })
         expect(res.status).toBe(200);

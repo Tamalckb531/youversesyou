@@ -1,4 +1,4 @@
-import { db } from "../db";
+import { getDb } from "../db";
 import { reflections } from "../db/schema";
 import { and, eq } from "drizzle-orm";
 
@@ -7,14 +7,14 @@ export type PartialReflection = Partial<NewReflection>;
 
 export const ReflectionRepository = {
     async findAllByUserId(userId: string) {
-        return await db
+        return await getDb()
             .select()
             .from(reflections)
             .where(eq(reflections.userId, userId));
     },
 
     async findOneByUserId(reflectionId: string, userId: string) {
-        const [reflection] = await db
+        const [reflection] = await getDb()
             .select()
             .from(reflections)
             .where(
@@ -28,11 +28,11 @@ export const ReflectionRepository = {
     },
 
     async bulkCreate(rows: NewReflection[]) {
-        return db.insert(reflections).values(rows).returning();
+        return getDb().insert(reflections).values(rows).returning();
     },
 
     async updateOne(rows: PartialReflection, reflectionId: string, userId: string) {
-        const reflection = await db
+        const reflection = await getDb()
             .update(reflections)
             .set(rows)
             .where(
