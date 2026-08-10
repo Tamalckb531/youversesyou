@@ -2,6 +2,7 @@
 import type { Context } from "hono";
 import { createMiddleware } from "hono/factory";
 import { auth, type AuthUser, type Session } from "../lib/auth";
+import { TEST_MIDDLEWARE_USER } from "../seed";
 
 export type AuthEnv = {
   Variables: {
@@ -9,6 +10,12 @@ export type AuthEnv = {
     session: Session | null;
   };
 };
+
+//! This is for testing
+export const testMiddleware = createMiddleware<AuthEnv>(async (c, next) => {
+  c.set("user", TEST_MIDDLEWARE_USER);
+  return next();
+});
 
 //? Does this request belong to a logged-in user?
 export const resolveSession = createMiddleware<AuthEnv>(async (c, next) => {
