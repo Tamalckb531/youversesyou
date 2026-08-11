@@ -36,3 +36,30 @@ export const TEST_REFLECTION = {
     updatedAt: new Date(),
     archivedAt: null,
 };
+
+export const INSERT_REFLECTION_ARRAY = [
+  {
+    type: "goal" as const,
+    title: "Test Goal",
+    description: "This is a test goal",
+    targetDate: new Date("2027-01-01"),
+    metadata: null,
+    slotIndex: 1,
+  },
+  {
+    type: "pain_point" as const,
+    title: "Test Pain Point",
+    description: "This is a test pain point",
+    targetDate: undefined,
+    metadata: null,
+    slotIndex: 1,
+  },
+  {
+    type: "dream" as const,
+    title: "Test Dream",
+    description: "This is a test dream",
+    targetDate: undefined,
+    metadata: null,
+    slotIndex: 1,
+  },
+];
