@@ -17,7 +17,8 @@ describe("ReflectionsGetController", () => {
   });
 
   function createMockContext(user: any) {
-    const json = vi.fn((body, status = 200) => ({
+    const json = vi.fn();
+    json.mockImplementation((body, status = 200) => ({
       status,
       body,
     }));
@@ -54,6 +55,7 @@ describe("ReflectionsGetController", () => {
       { id: "2", title: "Goal 2", userId: "11111111-1111-1111-1111-111111111111" },
     ];
 
+    //? When the controller call the service, it pretends to be successful and return the reflections
     vi.mocked(reflectionService.listForUser).mockResolvedValue(
       reflections as any
     );
