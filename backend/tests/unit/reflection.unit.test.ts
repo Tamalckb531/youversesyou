@@ -3,7 +3,7 @@ import type { Context } from "hono";
 
 import { ReflectionsGetController, ReflectionsGetOneController } from "../../src/controller/reflection.controller";
 import { reflectionService } from "../../src/service/reflection.service";
-import { TEST_USER } from "../../src/test-data";
+import { TEST_REFLECTION, TEST_USER } from "../../src/test-data";
 import { responseMsg } from "../../src/lib/constants";
 
 // Mock the service layer
@@ -151,46 +151,160 @@ describe("ReflectionsGetController", () => {
   });
 });
 
-// describe("ReflectionsGetOneController", () => {
-//   beforeEach(() => {
-//     vi.clearAllMocks();
-//   });
+describe("ReflectionsGetOneController", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
-//   function createMockContext(user: any, reflectionId?:string) {
-//     const json = vi.fn();
-//     json.mockImplementation((body, status = 200) => ({
-//       status,
-//       body,
-//     }));
+  function createMockContext(user: any, reflectionId?:string) {
+    const json = vi.fn();
+    json.mockImplementation((body, status = 200) => ({
+      status,
+      body,
+    }));
 
-//     const c = {
-//       req: { param: vi.fn().mockReturnValue(reflectionId), },
-//       get: vi.fn().mockReturnValue(user),
-//       json,
-//     } as unknown as Context;
+    const c = {
+      req: { param: vi.fn().mockReturnValue(reflectionId), },
+      get: vi.fn().mockReturnValue(user),
+      json,
+    } as unknown as Context;
 
-//     return { c, json };
-//   }
+    return { c, json };
+  }
 
-//   it("should return 400 when reflection id is missing", async () => {
-//     const { c, json } = createMockContext(
-//       { id: TEST_USER.id },
-//       undefined
-//     );
+  it("should return 400 when reflection id is missing", async () => {
+    const { c, json } = createMockContext(
+      { id: TEST_USER.id },
+      undefined
+    );
 
-//     const response = await ReflectionsGetOneController(c);
+    const response = await ReflectionsGetOneController(c);
 
-//     expect(json).toHaveBeenCalledWith(
-//       { success: false, message: "No reflection detected" },
-//       400
-//     );
+    expect(json).toHaveBeenCalledWith(
+      { success: false, msg:responseMsg.reflection.error.NO_REFLECTION_ID, data:null },
+      400
+    );
 
-//     expect(response).toEqual({
-//       status: 400,
-//       body: { success: false, message: "No id detected" },
-//     });
+    expect(response).toEqual({
+      status: 400,
+      body: { success: false, msg:responseMsg.reflection.error.NO_REFLECTION_ID, data:null },
+    });
 
-//     expect(reflectionService.listForUser).not.toHaveBeenCalled();
-//   });
+    expect(reflectionService.oneForUser).not.toHaveBeenCalled();
+  });
 
-// })
+  it("should return 400 when user id is missing", async () => {
+    const { c, json } = createMockContext(
+      {},
+      TEST_REFLECTION.id
+    );
+
+    const response = await ReflectionsGetOneController(c);
+
+    expect(json).toHaveBeenCalledWith(
+      { success: false, msg:responseMsg.reflection.error.NO_USER_ID, data:null },
+      400
+    );
+
+    expect(response).toEqual({
+      status: 400,
+      body: { success: false, msg:responseMsg.reflection.error.NO_USER_ID, data:null },
+    });
+
+    expect(reflectionService.oneForUser).not.toHaveBeenCalled();
+  });
+
+  it("should return one reflection when service succeeds", async () => {
+   
+    vi.mocked(reflectionService.oneForUser).mockResolvedValue(TEST_REFLECTION as any);
+    
+    const { c, json } = createMockContext(
+      {id:TEST_USER.id},
+      TEST_REFLECTION.id
+    );
+
+    const response = await ReflectionsGetOneController(c);
+
+    expect(reflectionService.oneForUser).toHaveBeenCalledTimes(1);
+    expect(reflectionService.oneForUser).toHaveBeenCalledWith(TEST_REFLECTION.id, TEST_USER.id);
+
+    expect(json).toHaveBeenCalledWith(
+      {
+        success: true,
+        msg: responseMsg.reflection.success.GET_ONE,
+        data: TEST_REFLECTION
+      }
+    );
+
+    expect(response).toEqual({
+      status: 200,
+      body: {
+        success: true,
+        msg: responseMsg.reflection.success.GET_ONE,
+        data: TEST_REFLECTION
+      }
+    });
+  });
+
+  it("should return 500 when service throws an error", async () => {
+   
+    vi.mocked(reflectionService.oneForUser).mockRejectedValue( new Error("Database failed") );
+
+    const { c, json } = createMockContext(
+      { id: TEST_USER.id, },
+      TEST_REFLECTION.id
+    );
+
+    const response = await ReflectionsGetOneController(c);
+
+    expect(reflectionService.oneForUser).toHaveBeenCalledTimes(1);
+
+    expect(json).toHaveBeenCalledWith(
+      {
+        success: false,
+        msg: "Database failed",
+        data:null
+      },
+      500
+    );
+
+    expect(response).toEqual({
+      status: 500,
+      body: {
+        success: false,
+        msg: "Database failed",
+        data:null
+      },
+    });
+  });
+
+  it("should return generic 500 message for non-Error throws", async () => {
+    vi.mocked(reflectionService.oneForUser).mockRejectedValue("boom");
+
+    const { c, json } = createMockContext(
+      { id: TEST_USER.id, },
+      TEST_REFLECTION.id
+    );
+
+    const response = await ReflectionsGetController(c);
+
+    expect(json).toHaveBeenCalledWith(
+      {
+        success: false,
+        msg: responseMsg.reflection.error.GENERIC_500,
+        data:null
+      },
+      500
+    );
+
+    expect(response).toEqual({
+      status: 500,
+      body: {
+        success: false,
+        msg: responseMsg.reflection.error.GENERIC_500,
+        data:null
+      },
+    });
+  });
+
+})
