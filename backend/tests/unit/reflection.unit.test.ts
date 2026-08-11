@@ -1,13 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Context } from "hono";
 
-import { ReflectionsGetController } from "../../src/controller/reflection.controller";
+import { ReflectionsGetController, ReflectionsGetOneController } from "../../src/controller/reflection.controller";
 import { reflectionService } from "../../src/service/reflection.service";
+import { TEST_USER } from "../../src/test-data";
 
 // Mock the service layer
 vi.mock("../../src/service/reflection.service", () => ({
   reflectionService: {
     listForUser: vi.fn(),
+    oneForUser: vi.fn(),
   },
 }));
 
@@ -51,8 +53,8 @@ describe("ReflectionsGetController", () => {
 
   it("should return reflections when service succeeds", async () => {
     const reflections = [
-      { id: "1", title: "Goal 1", userId: "11111111-1111-1111-1111-111111111111" },
-      { id: "2", title: "Goal 2", userId: "11111111-1111-1111-1111-111111111111" },
+      { id: "1", title: "Goal 1", userId: TEST_USER.id },
+      { id: "2", title: "Goal 2", userId: TEST_USER.id },
     ];
 
     //? When the controller call the service, it pretends to be successful and return the reflections
@@ -143,3 +145,47 @@ describe("ReflectionsGetController", () => {
     });
   });
 });
+
+describe("ReflectionsGetOneController", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function createMockContext(user: any, reflectionId?:string) {
+    const json = vi.fn();
+    json.mockImplementation((body, status = 200) => ({
+      status,
+      body,
+    }));
+
+    const c = {
+      req: { param: vi.fn().mockReturnValue(reflectionId), },
+      get: vi.fn().mockReturnValue(user),
+      json,
+    } as unknown as Context;
+
+    return { c, json };
+  }
+
+  it("should return 400 when reflection id is missing", async () => {
+    const { c, json } = createMockContext(
+      { id: TEST_USER.id },
+      undefined
+    );
+
+    const response = await ReflectionsGetOneController(c);
+
+    expect(json).toHaveBeenCalledWith(
+      { success: false, message: "No reflection detected" },
+      400
+    );
+
+    expect(response).toEqual({
+      status: 400,
+      body: { success: false, message: "No id detected" },
+    });
+
+    expect(reflectionService.listForUser).not.toHaveBeenCalled();
+  });
+
+})
