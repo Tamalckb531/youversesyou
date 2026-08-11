@@ -2,7 +2,7 @@
 import type { Context } from "hono";
 import { createMiddleware } from "hono/factory";
 import { auth, type AuthUser, type Session } from "../lib/auth";
-import { TEST_MIDDLEWARE_USER } from "../seed";
+import { TEST_MIDDLEWARE_USER } from "../test-data";
 
 export type AuthEnv = {
   Variables: {
