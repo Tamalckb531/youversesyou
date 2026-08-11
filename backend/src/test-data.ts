@@ -63,3 +63,42 @@ export const INSERT_REFLECTION_ARRAY = [
     slotIndex: 1,
   },
 ];
+
+export const createdReflections = [
+    {
+        id: "33333333-3333-3333-3333-333333333333",
+        userId: TEST_USER.id,
+        type: "goal",
+        title: "Test Goal",
+        description: "This is a test goal",
+        targetDate: "2027-01-01",
+        metadata: null,
+        status: "active",
+        slotIndex: 1,
+        previousVersionId: null,
+    },
+    {
+        id: "44444444-4444-4444-4444-444444444444",
+        userId: TEST_USER.id,
+        type: "pain_point",
+        title: "Test Pain Point",
+        description: "This is a test pain point",
+        targetDate: null,
+        metadata: null,
+        status: "active",
+        slotIndex: 1,
+        previousVersionId: null,
+    },
+    {
+        id: "55555555-5555-5555-5555-555555555555",
+        userId: TEST_USER.id,
+        type: "dream",
+        title: "Test Dream",
+        description: "This is a test dream",
+        targetDate: null,
+        metadata: null,
+        status: "active",
+        slotIndex: 1,
+        previousVersionId: null,
+    },
+]

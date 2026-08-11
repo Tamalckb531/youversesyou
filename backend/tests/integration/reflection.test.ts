@@ -45,6 +45,7 @@ describe("GET /api/v1/reflections", () => {
         const body = await res.json();
 
         expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.reflection.success.CREATED_BULK);
         expect(body.data).toHaveLength(3);
 
         for (const reflection of body.data) {
