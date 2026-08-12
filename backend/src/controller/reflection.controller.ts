@@ -146,9 +146,9 @@ export const ReflectionsPatchController = async (c: Context) => {
 
         if (!updated.success) throw new Error(updated.msg);
         return c.json({
-            success: true,
-            msg: responseMsg.reflection.success.UPDATE_ONE,
-            data: updated
+            success: updated.success,
+            msg: updated.msg,
+            data: updated.data
         }, 201);
     }
     catch (err) {
