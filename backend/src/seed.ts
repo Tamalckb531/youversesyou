@@ -1,29 +1,10 @@
 import { faker } from "@faker-js/faker";
 import { getDb } from "./db";
 import { reflections, users } from "./db/schema";
+import { TEST_REFLECTION, TEST_USER } from "./test-data";
 
 
-export const TEST_USER = {
-  id: "11111111-1111-1111-1111-111111111111",
-  googleId: "google-test-user",
-  email: "test@example.com",
-  name: "Test User",
-  status: "pending" as const,
-  onboardingCompletedAt: new Date(),
-};
-
-export const TEST_MIDDLEWARE_USER = {
-  id: "11111111-1111-1111-1111-111111111111",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  email: "test@example.com",
-  emailVerified: true,
-  name: "Test User",
-  status: "pending" as const,
-  onboardingCompletedAt: new Date(),
-};
-
-export async function seed() {
+async function seed() {
   // Clear old data
   await getDb().delete(reflections);
   await getDb().delete(users);
@@ -34,7 +15,9 @@ export async function seed() {
   const reflectionRows = [];
 
   // Goals
-  for (let i = 1; i <= 5; i++) {
+  reflectionRows.push(TEST_REFLECTION);
+
+  for (let i = 1; i <= 4; i++) {
     reflectionRows.push({
       userId: TEST_USER.id,
       type: "goal" as const,
@@ -85,3 +68,8 @@ export async function seed() {
 
   console.log("✅ Test database seeded");
 }
+
+seed().catch((err) => {
+    console.error("❌ Failed to seed database:", err);
+    process.exit(1);
+});
