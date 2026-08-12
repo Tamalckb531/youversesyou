@@ -32,7 +32,7 @@ export const ReflectionRepository = {
     },
 
     async updateOne(rows: PartialReflection, reflectionId: string, userId: string) {
-        const reflection = await getDb()
+        const [reflection] = await getDb()
             .update(reflections)
             .set(rows)
             .where(
@@ -40,7 +40,8 @@ export const ReflectionRepository = {
                     eq(reflections.userId, userId),
                     eq(reflections.id, reflectionId)
                 )
-            );
+            )
+            .returning();
         
         return reflection;
     }
