@@ -3,7 +3,6 @@ import { reflectionService } from "../../src/service/reflection.service";
 import { TEST_REFLECTION, TEST_USER } from "../../src/test-data";
 import { responseMsg } from "../../src/lib/constants";
 import { ReflectionRepository } from "../../src/repository/reflection.repository";
-import { toUpdateRow } from "../../src/lib/utils";
 
 vi.mock("../../src/repository/reflection.repository", () => ({
     ReflectionRepository: {
@@ -20,8 +19,6 @@ vi.mock("../../src/lib/utils", () => ({
     DAYS_120: 120,
     MS_PER_DAY: 24 * 60 * 60 * 1000
 }));
-
-toUpdateRow
 
 describe("ReflectionsPatchController", () => {
     beforeEach(() => {
