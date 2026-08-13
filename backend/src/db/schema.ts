@@ -292,26 +292,6 @@ export const reflectionPlans = pgTable(
   ],
 );
 
-// junction: reflections <-> overall plans (many-to-many)
-// semantically valid only when plan.type = 'overall' — enforced in service layer, not DB
-export const reflectionPlans = pgTable(
-  "reflection_plans",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    reflectionId: uuid("reflection_id")
-      .notNull()
-      .references(() => reflections.id, { onDelete: "cascade" }),
-    planId: uuid("plan_id")
-      .notNull()
-      .references(() => plans.id, { onDelete: "cascade" }),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  },
-  (table) => [
-    uniqueIndex("reflection_plans_unique").on(table.reflectionId, table.planId),
-    index("reflection_plans_plan_idx").on(table.planId),
-  ],
-);
- 
 // junction: plan <-> plan, self-referential many-to-many, strictly one level apart
 // hierarchy: overall -> yearly -> monthly -> weekly; parentPlanId is always the coarser type
 export const planRelations = pgTable(
@@ -330,20 +310,6 @@ export const planRelations = pgTable(
     uniqueIndex("plan_relations_unique").on(table.parentPlanId, table.childPlanId),
     index("plan_relations_child_idx").on(table.childPlanId),
     check("plan_relations_no_self_link", sql`${table.parentPlanId} != ${table.childPlanId}`),
-    check(
-      "plan_relations_one_level_apart",
-      sql`(
-        SELECT
-          CASE
-            WHEN p.type = 'overall' AND c.type = 'yearly' THEN true
-            WHEN p.type = 'yearly' AND c.type = 'monthly' THEN true
-            WHEN p.type = 'monthly' AND c.type = 'weekly' THEN true
-            ELSE false
-          END
-        FROM plans p, plans c
-        WHERE p.id = ${table.parentPlanId} AND c.id = ${table.childPlanId}
-      )`,
-    ),
   ],
 );
  
@@ -500,7 +466,8 @@ export const dbRelations = defineRelations(
     habitLogs,
     habitStreaks,
     plans,
-    planItems,
+    reflectionPlans,
+    planRelations,
     todos,
     aiReports,
     emergencyChatSessions,
@@ -527,7 +494,7 @@ export const dbRelations = defineRelations(
         from: r.reflections.userId,
         to: r.users.id,
       }),
-      plans: r.many.plans(),
+      reflectionPlans: r.many.reflectionPlans(),
     },
 
     routineProfiles: {
@@ -577,17 +544,36 @@ export const dbRelations = defineRelations(
         from: r.plans.userId,
         to: r.users.id,
       }),
-      goal: r.one.reflections({
-        from: r.plans.goalId,
-        to: r.reflections.id,
+      reflectionPlans: r.many.reflectionPlans(),
+      // this plan as a parent (coarser) linking down to finer child plans
+      childRelations: r.many.planRelations({
+        from: r.plans.id,
+        to: r.planRelations.parentPlanId,
       }),
-      items: r.many.planItems(),
-      todos: r.many.todos(),
+      // this plan as a child (finer) linking up to coarser parent plans
+      parentRelations: r.many.planRelations({
+        from: r.plans.id,
+        to: r.planRelations.childPlanId,
+      }),
     },
 
-    planItems: {
+    reflectionPlans: {
+      reflection: r.one.reflections({
+        from: r.reflectionPlans.reflectionId,
+        to: r.reflections.id,
+      }),
       plan: r.one.plans({
-        from: r.planItems.planId,
+        from: r.reflectionPlans.planId,
+        to: r.plans.id,
+      }),
+    },
+    planRelations: {
+      parent: r.one.plans({
+        from: r.planRelations.parentPlanId,
+        to: r.plans.id,
+      }),
+      child: r.one.plans({
+        from: r.planRelations.childPlanId,
         to: r.plans.id,
       }),
     },
