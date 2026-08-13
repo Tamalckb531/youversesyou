@@ -13,8 +13,9 @@ import {
   jsonb,
   index,
   uniqueIndex,
+  check,
 } from "drizzle-orm/pg-core";
-import { defineRelations } from "drizzle-orm";
+import { defineRelations, sql } from "drizzle-orm";
 
 // ─────────────────────────────────────────────────────────────
 //? ENUMS
@@ -253,38 +254,99 @@ export const plans = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    goalId: uuid("goal_id").references(() => reflections.id, { onDelete: "set null" }),
     title: text("title").notNull(),
     description: text("description"),
     type: planTypeEnum("type").notNull(),
-    periodStart: date("period_start").notNull(),
-    periodEnd: date("period_end").notNull(),
+    // null for overall; "2025" for yearly; "Jan".."Dec" for monthly; "Week1".."Week52" for weekly
+    time: text("time"),
     status: planStatusEnum("status").notNull().default("active"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     index("plans_user_type_idx").on(table.userId, table.type),
+    check(
+      "plans_time_matches_type",
+      sql`(${table.type} = 'overall' AND ${table.time} IS NULL) OR (${table.type} != 'overall' AND ${table.time} IS NOT NULL)`,
+    ),
   ],
 );
 
-export const planItems = pgTable(
-  "plan_items",
+// junction: reflections <-> overall plans (many-to-many)
+// semantically valid only when plan.type = 'overall'
+export const reflectionPlans = pgTable(
+  "reflection_plans",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    reflectionId: uuid("reflection_id")
+      .notNull()
+      .references(() => reflections.id, { onDelete: "cascade" }),
     planId: uuid("plan_id")
       .notNull()
       .references(() => plans.id, { onDelete: "cascade" }),
-    title: text("title").notNull(),
-    isCompleted: boolean("is_completed").notNull().default(false),
-    dueDate: date("due_date"),
-    completedAt: timestamp("completed_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index("plan_items_plan_idx").on(table.planId),
+    uniqueIndex("reflection_plans_unique").on(table.reflectionId, table.planId),
+    index("reflection_plans_plan_idx").on(table.planId),
   ],
 );
+
+// junction: reflections <-> overall plans (many-to-many)
+// semantically valid only when plan.type = 'overall' — enforced in service layer, not DB
+export const reflectionPlans = pgTable(
+  "reflection_plans",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reflectionId: uuid("reflection_id")
+      .notNull()
+      .references(() => reflections.id, { onDelete: "cascade" }),
+    planId: uuid("plan_id")
+      .notNull()
+      .references(() => plans.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("reflection_plans_unique").on(table.reflectionId, table.planId),
+    index("reflection_plans_plan_idx").on(table.planId),
+  ],
+);
+ 
+// junction: plan <-> plan, self-referential many-to-many, strictly one level apart
+// hierarchy: overall -> yearly -> monthly -> weekly; parentPlanId is always the coarser type
+export const planRelations = pgTable(
+  "plan_relations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    parentPlanId: uuid("parent_plan_id")
+      .notNull()
+      .references(() => plans.id, { onDelete: "cascade" }),
+    childPlanId: uuid("child_plan_id")
+      .notNull()
+      .references(() => plans.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("plan_relations_unique").on(table.parentPlanId, table.childPlanId),
+    index("plan_relations_child_idx").on(table.childPlanId),
+    check("plan_relations_no_self_link", sql`${table.parentPlanId} != ${table.childPlanId}`),
+    check(
+      "plan_relations_one_level_apart",
+      sql`(
+        SELECT
+          CASE
+            WHEN p.type = 'overall' AND c.type = 'yearly' THEN true
+            WHEN p.type = 'yearly' AND c.type = 'monthly' THEN true
+            WHEN p.type = 'monthly' AND c.type = 'weekly' THEN true
+            ELSE false
+          END
+        FROM plans p, plans c
+        WHERE p.id = ${table.parentPlanId} AND c.id = ${table.childPlanId}
+      )`,
+    ),
+  ],
+);
+ 
 
 export const todos = pgTable(
   "todos",
