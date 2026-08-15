@@ -1,10 +1,10 @@
-import { ReflectionsGetController, ReflectionsGetOneController, ReflectionsPatchController, ReflectionsPostController } from "../controller/reflection.controller";
+import { PlanPostController } from "../controller/plan.controller";
 import { createAuthenticatedRoute } from "./createAuthenticationRoute";
 
 export const planRoutes = createAuthenticatedRoute();
 
-planRoutes.get("/", ReflectionsGetController);
-planRoutes.post("/", ReflectionsPostController);
-planRoutes.get("/:id", ReflectionsGetOneController);
-planRoutes.patch("/:id", ReflectionsPatchController);
+planRoutes.get("/", PlanPostController);
+planRoutes.post("/", PlanPostController);
+planRoutes.get("/:id", PlanPostController);
+planRoutes.patch("/:id", PlanPostController);
 
