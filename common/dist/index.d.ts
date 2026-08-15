@@ -111,3 +111,49 @@ export declare const updateReflectionSchema: z.ZodObject<{
     updatedAt: z.ZodOptional<z.ZodCoercedDate<unknown>>;
 }, z.core.$strip>;
 export type updateReflectionSchemaType = z.infer<typeof updateReflectionSchema>;
+export declare const planTypeSchema: z.ZodEnum<{
+    monthly: "monthly";
+    overall: "overall";
+    weekly: "weekly";
+    yearly: "yearly";
+}>;
+export type PlanType = z.infer<typeof planTypeSchema>;
+export declare const planCreateItemSchema: z.ZodObject<{
+    title: z.ZodString;
+    description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    type: z.ZodEnum<{
+        monthly: "monthly";
+        overall: "overall";
+        weekly: "weekly";
+        yearly: "yearly";
+    }>;
+    time: z.ZodNullable<z.ZodString>;
+    junctionIdArray: z.ZodArray<z.ZodUUID>;
+}, z.core.$strip>;
+export declare const planBulkCreateSchema: z.ZodArray<z.ZodObject<{
+    title: z.ZodString;
+    description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    type: z.ZodEnum<{
+        monthly: "monthly";
+        overall: "overall";
+        weekly: "weekly";
+        yearly: "yearly";
+    }>;
+    time: z.ZodNullable<z.ZodString>;
+    junctionIdArray: z.ZodArray<z.ZodUUID>;
+}, z.core.$strip>>;
+export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
+export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;
+export interface PlanResponseDTO {
+    id: string;
+    userId: string;
+    title: string;
+    description: string | null;
+    type: PlanType;
+    time: string | null;
+    status: "active" | "completed" | "abandoned";
+    createdAt: string;
+    updatedAt: string;
+    linkedIds: string[];
+}
+export type PlanBulkCreateResponseDTO = PlanResponseDTO[];
