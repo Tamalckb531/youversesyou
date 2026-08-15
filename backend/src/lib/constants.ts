@@ -15,7 +15,7 @@ export const responseMsg = {
     },
     plan: {
         success: {
-            BULK_CREATE: "Plans created",
+            CREATED_BULK: "Plans created successfully",
         },
         error: {
             INVALID_BODY: "Invalid request body",
@@ -28,7 +28,9 @@ export const responseMsg = {
         },
     },
     generic: {
-        NO_USER_ID: "No id detected",
-        GENERIC_500: "Something went wrong",
+        error: {
+            NO_USER_ID: "No id detected",
+            GENERIC_500: "Something went wrong",
+        },
     },
 }
