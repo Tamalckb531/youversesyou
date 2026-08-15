@@ -41,29 +41,28 @@ export const PlanService = {
     
         let validIds: Set<string>;
         if (isOverall) {
-        const found = await ReflectionRepository.findReflectionsByIds(userId, allJunctionIds);
-        validIds = new Set(found.map((r) => r.id));
+            const found = await ReflectionRepository.findReflectionsByIds(userId, allJunctionIds);
+            validIds = new Set(found.map((r) => r.id));
         } else {
-        const found = await PlanRepository.findPlansByIds(userId, allJunctionIds);
-        // every found plan must ALSO be of the correct parent type, not merely owned+existing
-        const wrongType = found.filter((p) => p.type !== expectedParentType);
-        if (wrongType.length > 0) {
-            throw new PlanValidationError("INVALID_PARENT_TYPE");
-        }
-        validIds = new Set(found.map((p) => p.id));
+            const found = await PlanRepository.findPlansByIds(userId, allJunctionIds);
+            const wrongType = found.filter((p) => p.type !== expectedParentType);
+            if (wrongType.length > 0) {
+                throw new PlanValidationError("INVALID_PARENT_TYPE");
+            }
+            validIds = new Set(found.map((p) => p.id));
         }
     
         // any id the user sent that we couldn't resolve (wrong owner, wrong type, or nonexistent)
         // fails the whole batch — bulk create is all-or-nothing.
         const missing = allJunctionIds.filter((id) => !validIds.has(id));
         if (missing.length > 0) {
-        throw new PlanValidationError("INVALID_JUNCTION_IDS");
+            throw new PlanValidationError("INVALID_JUNCTION_IDS");
         }
     
         const preparedItems = items.map((item) => ({
-        plan: toNewPlan(item),
-        junctionIds: dedupeIds(item.junctionIdArray),
-        junctionKind: (isOverall ? "reflection" : "plan") as "reflection" | "plan",
+            plan: toNewPlan(item),
+            junctionIds: dedupeIds(item.junctionIdArray),
+            junctionKind: (isOverall ? "reflection" : "plan") as "reflection" | "plan",
         }));
     
         return PlanRepository.bulkCreateWithJunctions(userId, preparedItems);
