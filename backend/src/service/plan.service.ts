@@ -23,7 +23,11 @@ export const PlanService = {
     async allPlans(userId: string) {
         return PlanRepository.findAllPlansByUserId(userId);  
     },
-    
+
+    async onePlan(planId:string, userId: string) {
+        return PlanRepository.findOnePlanByUserId(planId, userId);
+    }, 
+
     async bulkCreate(userId: string, items: PlanBulkCreateInput) {
         // zod already guarantees non-empty + same-type-per-batch, but re-assert here
         // since services shouldn't blindly trust upstream layers either.
