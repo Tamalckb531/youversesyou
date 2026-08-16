@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { planBulkCreateSchema } from "@tamaldip/uvsu-common";
+import { planBulkCreateSchema, updatePlanSchema } from "@tamaldip/uvsu-common";
 import { PlanService, PlanValidationError } from "../service/plan.service";
 import { responseMsg } from "../lib/constants";
 
@@ -110,5 +110,54 @@ export const PlanPostController = async (c: Context) => {
 };
 
 export const PlanPatchController = async (c: Context) => {
+    try {
+        const id = c.req.param("id");
 
+        const user = c.get("user");
+        const userId = user.id;
+
+        if (!id) return c.json({
+            success: false,
+            msg: responseMsg.plan.error.NO_PLAN_ID,
+            data: null
+        }, 400);
+        if (!userId) return c.json({
+            success: false,
+            msg: responseMsg.generic.error.NO_USER_ID,
+            data: null
+        }, 400);
+
+        const body: unknown = await c.req.json();
+
+        const result = updatePlanSchema.safeParse(body);
+        if (!result.success) {
+            const issue = result.error.issues[0];
+            return c.json(
+                {
+                    success: false,
+                    msg: `${issue.message} on field: ${issue.path.join(".")}`,
+                    data: null
+                },
+                400,
+            );
+        }
+
+        const updated = await PlanService.updatePlan(userId, id, result.data);
+
+        return c.json({
+            success: true,
+            msg: responseMsg.plan.success.UPDATE_ONE,
+            data: updated
+        }, 201);
+    }
+    catch (err) {
+        return c.json(
+            {
+                success: false,
+                msg: err instanceof Error ? err.message : responseMsg.generic.error.GENERIC_500, 
+                data: null
+            },
+            500,
+        );
+    }
 }
