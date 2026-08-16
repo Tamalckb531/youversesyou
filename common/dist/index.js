@@ -116,3 +116,8 @@ export const planBulkCreateSchema = z
     .min(1, "at least one plan is required")
     .max(50, "cannot create more than 50 plans at once")
     .refine((items) => items.every((i) => i.type === items[0].type), { message: "all plans in a single bulk request must share the same type" });
+export const updatePlanSchema = planCreateItemSchema.omit({
+    type: true,
+    time: true,
+    junctionIdArray: true
+});

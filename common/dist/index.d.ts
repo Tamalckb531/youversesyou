@@ -142,8 +142,13 @@ export declare const planBulkCreateSchema: z.ZodArray<z.ZodObject<{
     time: z.ZodNullable<z.ZodString>;
     junctionIdArray: z.ZodArray<z.ZodUUID>;
 }, z.core.$strip>>;
+export declare const updatePlanSchema: z.ZodObject<{
+    title: z.ZodString;
+    description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+}, z.core.$strip>;
 export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
 export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;
+export type updatePlanSchema = z.infer<typeof updatePlanSchema>;
 export interface PlanResponseDTO {
     id: string;
     userId: string;
