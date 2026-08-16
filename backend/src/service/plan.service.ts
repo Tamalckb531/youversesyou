@@ -20,6 +20,9 @@ const PARENT_TYPE: Record<PlanType, PlanType | null> = {
  
 
 export const PlanService = {
+    async allPlans(userId: string) {
+        return PlanRepository.findAllPlansByUserId(userId);  
+    },
     async bulkCreate(userId: string, items: PlanBulkCreateInput) {
         // zod already guarantees non-empty + same-type-per-batch, but re-assert here
         // since services shouldn't blindly trust upstream layers either.
