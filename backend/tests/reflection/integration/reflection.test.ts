@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { app } from "../../src/index";
-import { INSERT_REFLECTION_ARRAY, TEST_REFLECTION, TEST_USER } from "../../src/test-data";
-import { responseMsg } from "../../src/lib/constants";
-import { getDb } from "../../src/db";
-import { reflections } from "../../src/db/schema";
+import { app } from "../../../src/index";
+import { INSERT_REFLECTION_ARRAY, TEST_REFLECTION, TEST_USER } from "../../../src/test-data";
+import { responseMsg } from "../../../src/lib/constants";
+import { getDb } from "../../../src/db";
+import { reflections } from "../../../src/db/schema";
 import { eq } from "drizzle-orm";
 
 describe("GET /api/v1/reflections", () => {

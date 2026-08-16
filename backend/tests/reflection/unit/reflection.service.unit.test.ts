@@ -1,17 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { reflectionService } from "../../src/service/reflection.service";
-import { TEST_REFLECTION, TEST_USER } from "../../src/test-data";
-import { responseMsg } from "../../src/lib/constants";
-import { ReflectionRepository } from "../../src/repository/reflection.repository";
+import { reflectionService } from "../../../src/service/reflection.service";
+import { TEST_REFLECTION, TEST_USER } from "../../../src/test-data";
+import { responseMsg } from "../../../src/lib/constants";
+import { ReflectionRepository } from "../../../src/repository/reflection.repository";
 
-vi.mock("../../src/repository/reflection.repository", () => ({
+vi.mock("../../../src/repository/reflection.repository", () => ({
     ReflectionRepository: {
         findOneByUserId: vi.fn(),
         updateOne: vi.fn(),
     },
 }));
 
-vi.mock("../../src/lib/utils", () => ({
+vi.mock("../../../src/lib/utils", () => ({
     toUpdateRow: vi.fn((input) => ({
         ...input,
         updatedAt: new Date(),

@@ -2,6 +2,13 @@
 
 set -e
 
+TEST_TARGET="$1"
+
+if [ -n "$TEST_TARGET" ] && [ ! -d "tests/$TEST_TARGET" ]; then
+    echo "Error: Test directory 'tests/$TEST_TARGET' does not exist."
+    exit 1
+fi
+
 CONTAINER_NAME="youverseyou-test-postgres"
 TEST_DB="testdb"
 TEST_USER="postgres"
@@ -77,9 +84,17 @@ echo " Running tests"
 echo "======================================"
 echo ""
 
+if [ -z "$TEST_TARGET" ]; then
+    TEST_PATH="tests"
+else
+    TEST_PATH="tests/$TEST_TARGET"
+fi
+
+echo "Running tests from: $TEST_PATH"
+
 DATABASE_URL="$TEST_DATABASE_URL" \
 NODE_ENV=test \
-npx vitest run
+npx vitest run "$TEST_PATH"
 
 echo ""
 echo "======================================"
