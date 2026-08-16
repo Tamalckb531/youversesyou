@@ -58,3 +58,69 @@ export const updateReflectionSchema = reflectionSchema.omit({
     createdAt: true,
     archivedAt: true,
 }).partial();
+//! Planning types and schemas 
+export const planTypeSchema = z.enum(["overall", "yearly", "monthly", "weekly"]);
+export const planStatusSchema = z.enum(["active", "completed", "abandoned"]);
+// null only for "overall"; "20**" year for "yearly"; "Jan".."Dec" for "monthly";
+// "Week1".."Week52" (no leading zero, no Week0/Week53+) for "weekly".
+// Cross-field consistency (time shape must match `type`) is enforced via superRefine below,
+// not here, since a single field regex can't see its sibling `type` field.
+const yearRegex = /^20\d{2}$/;
+const monthRegex = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/;
+const weekRegex = /^Week([1-9]|[1-4][0-9]|5[0-2])$/;
+const planTimeSchema = z.string().nullable();
+const planCreateItemBaseSchema = z
+    .object({
+    title: z.string().trim().min(1, "title is required").max(200),
+    description: z.string().trim().max(2000).nullable().optional(),
+    type: planTypeSchema,
+    time: planTimeSchema,
+    status: planStatusSchema,
+    // ids of one-level-up entities to link: reflections (if type === "overall")
+    // or parent plans (if type !== "overall"). Deduped server-side.
+    junctionIdArray: z
+        .array(z.uuid("junctionIdArray must contain valid uuids"))
+        .min(1, "at least one parent/reflection link is required")
+        .max(5),
+});
+export const planCreateItemSchema = planCreateItemBaseSchema
+    .superRefine((val, ctx) => {
+    if (val.type === "overall") {
+        if (val.time !== null) {
+            ctx.addIssue({
+                code: "custom",
+                path: ["time"],
+                message: "time must be null for overall plans",
+            });
+        }
+        return;
+    }
+    if (val.time === null) {
+        ctx.addIssue({
+            code: "custom",
+            path: ["time"],
+            message: `time is required for ${val.type} plans`,
+        });
+        return;
+    }
+    const isValid = (val.type === "yearly" && yearRegex.test(val.time)) ||
+        (val.type === "monthly" && monthRegex.test(val.time)) ||
+        (val.type === "weekly" && weekRegex.test(val.time));
+    if (!isValid) {
+        ctx.addIssue({
+            code: "custom",
+            path: ["time"],
+            message: `time "${val.time}" does not match expected format for type "${val.type}"`,
+        });
+    }
+});
+export const planBulkCreateSchema = z
+    .array(planCreateItemSchema)
+    .min(1, "at least one plan is required")
+    .max(50, "cannot create more than 50 plans at once")
+    .refine((items) => items.every((i) => i.type === items[0].type), { message: "all plans in a single bulk request must share the same type" });
+export const updatePlanSchema = planCreateItemBaseSchema.omit({
+    type: true,
+    time: true,
+    junctionIdArray: true
+}).partial();

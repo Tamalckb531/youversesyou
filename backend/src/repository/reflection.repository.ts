@@ -1,6 +1,6 @@
 import { getDb } from "../db";
 import { reflections } from "../db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 export type NewReflection = typeof reflections.$inferInsert;
 export type PartialReflection = Partial<NewReflection>;
@@ -25,6 +25,15 @@ export const ReflectionRepository = {
             );
 
         return reflection;
+    },
+
+    async findReflectionsByIds(userId: string, ids: string[]) {
+        if (ids.length === 0) return [];
+
+        return await getDb()
+            .select({ id: reflections.id })
+            .from(reflections)
+            .where(and(eq(reflections.userId, userId), inArray(reflections.id, ids)));
     },
 
     async bulkCreate(rows: NewReflection[]) {

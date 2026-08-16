@@ -1,16 +1,7 @@
-import { Hono } from "hono";
-import {
-  requireAuth,
-  resolveSession,
-  testMiddleware,
-  type AuthEnv,
-} from "../middleware/auth.middleware";
 import { ReflectionsGetController, ReflectionsGetOneController, ReflectionsPatchController, ReflectionsPostController } from "../controller/reflection.controller";
+import { createAuthenticatedRoute } from "./createAuthenticationRoute";
 
-export const reflectionRoutes = new Hono<AuthEnv>();
-
-{process.env.NODE_ENV!=="test" && reflectionRoutes.use("*", resolveSession, requireAuth);}
-{process.env.NODE_ENV==="test" && reflectionRoutes.use("*", testMiddleware);}
+export const reflectionRoutes = createAuthenticatedRoute();
 
 reflectionRoutes.get("/", ReflectionsGetController);
 reflectionRoutes.post("/", ReflectionsPostController);

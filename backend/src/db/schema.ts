@@ -13,8 +13,9 @@ import {
   jsonb,
   index,
   uniqueIndex,
+  check,
 } from "drizzle-orm/pg-core";
-import { defineRelations } from "drizzle-orm";
+import { defineRelations, sql } from "drizzle-orm";
 
 // ─────────────────────────────────────────────────────────────
 //? ENUMS
@@ -25,7 +26,7 @@ export const entityStatusEnum = pgEnum("entity_status", ["active", "archived"]);
 export const reflectionTypeEnum = pgEnum("reflection_type", ["goal", "pain_point", "dream"]);
 export const habitTargetTypeEnum = pgEnum("habit_target_type", ["boolean", "count", "duration"]);
 export const habitLogStatusEnum = pgEnum("habit_log_status", ["done", "skipped", "missed"]);
-export const planTypeEnum = pgEnum("plan_type", ["weekly", "monthly", "yearly"]);
+export const planTypeEnum = pgEnum("plan_type", ["weekly", "monthly", "yearly", "overall"]);
 export const planStatusEnum = pgEnum("plan_status", ["active", "completed", "abandoned"]);
 export const todoSourceEnum = pgEnum("todo_source", ["user", "ai"]);
 export const aiReportTypeEnum = pgEnum("ai_report_type", [
@@ -253,38 +254,65 @@ export const plans = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    goalId: uuid("goal_id").references(() => reflections.id, { onDelete: "set null" }),
     title: text("title").notNull(),
     description: text("description"),
     type: planTypeEnum("type").notNull(),
-    periodStart: date("period_start").notNull(),
-    periodEnd: date("period_end").notNull(),
+    // null for overall; "2025" for yearly; "Jan".."Dec" for monthly; "Week1".."Week52" for weekly
+    time: text("time"),
     status: planStatusEnum("status").notNull().default("active"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
     index("plans_user_type_idx").on(table.userId, table.type),
+    check(
+      "plans_time_matches_type",
+      sql`(${table.type} = 'overall' AND ${table.time} IS NULL) OR (${table.type} != 'overall' AND ${table.time} IS NOT NULL)`,
+    ),
   ],
 );
 
-export const planItems = pgTable(
-  "plan_items",
+// junction: reflections <-> overall plans (many-to-many)
+// semantically valid only when plan.type = 'overall'
+export const reflectionPlans = pgTable(
+  "reflection_plans",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    reflectionId: uuid("reflection_id")
+      .notNull()
+      .references(() => reflections.id, { onDelete: "cascade" }),
     planId: uuid("plan_id")
       .notNull()
       .references(() => plans.id, { onDelete: "cascade" }),
-    title: text("title").notNull(),
-    isCompleted: boolean("is_completed").notNull().default(false),
-    dueDate: date("due_date"),
-    completedAt: timestamp("completed_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    index("plan_items_plan_idx").on(table.planId),
+    uniqueIndex("reflection_plans_unique").on(table.reflectionId, table.planId),
+    index("reflection_plans_plan_idx").on(table.planId),
   ],
 );
+
+// junction: plan <-> plan, self-referential many-to-many, strictly one level apart
+// hierarchy: overall -> yearly -> monthly -> weekly; parentPlanId is always the coarser type
+export const planRelations = pgTable(
+  "plan_relations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    parentPlanId: uuid("parent_plan_id")
+      .notNull()
+      .references(() => plans.id, { onDelete: "cascade" }),
+    childPlanId: uuid("child_plan_id")
+      .notNull()
+      .references(() => plans.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("plan_relations_unique").on(table.parentPlanId, table.childPlanId),
+    index("plan_relations_child_idx").on(table.childPlanId),
+    check("plan_relations_no_self_link", sql`${table.parentPlanId} != ${table.childPlanId}`),
+  ],
+);
+ 
 
 export const todos = pgTable(
   "todos",
@@ -438,7 +466,8 @@ export const dbRelations = defineRelations(
     habitLogs,
     habitStreaks,
     plans,
-    planItems,
+    reflectionPlans,
+    planRelations,
     todos,
     aiReports,
     emergencyChatSessions,
@@ -465,7 +494,7 @@ export const dbRelations = defineRelations(
         from: r.reflections.userId,
         to: r.users.id,
       }),
-      plans: r.many.plans(),
+      reflectionPlans: r.many.reflectionPlans(),
     },
 
     routineProfiles: {
@@ -515,17 +544,36 @@ export const dbRelations = defineRelations(
         from: r.plans.userId,
         to: r.users.id,
       }),
-      goal: r.one.reflections({
-        from: r.plans.goalId,
-        to: r.reflections.id,
+      reflectionPlans: r.many.reflectionPlans(),
+      // this plan as a parent (coarser) linking down to finer child plans
+      childRelations: r.many.planRelations({
+        from: r.plans.id,
+        to: r.planRelations.parentPlanId,
       }),
-      items: r.many.planItems(),
-      todos: r.many.todos(),
+      // this plan as a child (finer) linking up to coarser parent plans
+      parentRelations: r.many.planRelations({
+        from: r.plans.id,
+        to: r.planRelations.childPlanId,
+      }),
     },
 
-    planItems: {
+    reflectionPlans: {
+      reflection: r.one.reflections({
+        from: r.reflectionPlans.reflectionId,
+        to: r.reflections.id,
+      }),
       plan: r.one.plans({
-        from: r.planItems.planId,
+        from: r.reflectionPlans.planId,
+        to: r.plans.id,
+      }),
+    },
+    planRelations: {
+      parent: r.one.plans({
+        from: r.planRelations.parentPlanId,
+        to: r.plans.id,
+      }),
+      child: r.one.plans({
+        from: r.planRelations.childPlanId,
         to: r.plans.id,
       }),
     },

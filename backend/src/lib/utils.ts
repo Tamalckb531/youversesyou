@@ -1,5 +1,6 @@
-import type { createReflectionType, updateReflectionSchemaType } from "@tamaldip/uvsu-common";
+import type { createReflectionType, updateReflectionSchemaType, PlanCreateItem } from "@tamaldip/uvsu-common";
 import type { NewReflection, PartialReflection } from "../repository/reflection.repository";
+import type { NewPlan } from "../repository/plan.repository";
 
 export const toInsertRow = (input:createReflectionType, userId:string):NewReflection => {
     return {
@@ -40,3 +41,19 @@ export const toUpdateRow = (
 
 export const DAYS_120 = 120;
 export const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+export function toNewPlan(item: PlanCreateItem): Omit<NewPlan, "userId"> {
+  return {
+    title: item.title,
+    description: item.description ?? null,
+    type: item.type,
+    time: item.time,
+    status: "active",
+  };
+}
+ 
+export function dedupeIds(ids: string[]): string[] {
+  return Array.from(new Set(ids));
+}
+ 
+export const toIds = (items: { id: string }[]): string[] => items.map((item) => item.id);
