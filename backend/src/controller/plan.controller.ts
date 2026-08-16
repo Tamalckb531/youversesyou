@@ -4,7 +4,31 @@ import { PlanService, PlanValidationError } from "../service/plan.service";
 import { responseMsg } from "../lib/constants";
 
 export const PlanGetController = async (c: Context) => {
-    
+    try {
+        const user = c.get("user");
+        const userId = user.id;
+
+        if (!userId) return c.json({
+            success: false,
+            msg: responseMsg.generic.error.NO_USER_ID,
+            data: null
+        }, 400);
+
+        const items = await PlanService.allPlans(userId);
+
+        return c.json({
+            success: true,
+            msg: responseMsg.plan.success.GET_ALL,
+            data:items
+        })
+    }
+    catch (err) {
+        return c.json({
+            success: false,
+            msg: err instanceof Error ? err.message : responseMsg.generic.error.GENERIC_500,
+            data:null
+        }, 500); 
+    }
 }
 
 export const PlanPostController = async (c: Context) => {

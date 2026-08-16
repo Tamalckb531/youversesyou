@@ -15,7 +15,10 @@ export const responseMsg = {
     },
     plan: {
         success: {
+            GET_ALL: "Plans loaded",
+            GET_ONE :"Single plan loaded",
             CREATED_BULK: "Plans created successfully",
+            UPDATE_ONE :"Plan updated successfully",
         },
         error: {
             INVALID_BODY: "Invalid request body",
