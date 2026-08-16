@@ -60,6 +60,7 @@ export const updateReflectionSchema = reflectionSchema.omit({
 }).partial();
 //! Planning types and schemas 
 export const planTypeSchema = z.enum(["overall", "yearly", "monthly", "weekly"]);
+export const planStatusSchema = z.enum(["active", "completed", "abandoned"]);
 // null only for "overall"; "20**" year for "yearly"; "Jan".."Dec" for "monthly";
 // "Week1".."Week52" (no leading zero, no Week0/Week53+) for "weekly".
 // Cross-field consistency (time shape must match `type`) is enforced via superRefine below,
@@ -74,6 +75,7 @@ export const planCreateItemSchema = z
     description: z.string().trim().max(2000).nullable().optional(),
     type: planTypeSchema,
     time: planTimeSchema,
+    status: planStatusSchema,
     // ids of one-level-up entities to link: reflections (if type === "overall")
     // or parent plans (if type !== "overall"). Deduped server-side.
     junctionIdArray: z

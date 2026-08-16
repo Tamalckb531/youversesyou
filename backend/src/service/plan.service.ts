@@ -79,6 +79,6 @@ export const PlanService = {
     async updatePlan(userId: string, planId: string, item: updatePlanSchemaType) {
         const currentPlan = await PlanRepository.findOnePlanByUserIdWithoutCon(planId, userId);        
         if (!currentPlan) throw new Error(responseMsg.plan.error.NO_PLAN_ID);
-        return ReflectionRepository.updateOnePlan(item, planId, userId);
+        return PlanRepository.updateOnePlan(item, planId, userId);
     }
 }

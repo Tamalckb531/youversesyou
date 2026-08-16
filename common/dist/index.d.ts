@@ -118,6 +118,11 @@ export declare const planTypeSchema: z.ZodEnum<{
     yearly: "yearly";
 }>;
 export type PlanType = z.infer<typeof planTypeSchema>;
+export declare const planStatusSchema: z.ZodEnum<{
+    abandoned: "abandoned";
+    active: "active";
+    completed: "completed";
+}>;
 export declare const planCreateItemSchema: z.ZodObject<{
     title: z.ZodString;
     description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -128,6 +133,11 @@ export declare const planCreateItemSchema: z.ZodObject<{
         yearly: "yearly";
     }>;
     time: z.ZodNullable<z.ZodString>;
+    status: z.ZodEnum<{
+        abandoned: "abandoned";
+        active: "active";
+        completed: "completed";
+    }>;
     junctionIdArray: z.ZodArray<z.ZodUUID>;
 }, z.core.$strip>;
 export declare const planBulkCreateSchema: z.ZodArray<z.ZodObject<{
@@ -140,11 +150,21 @@ export declare const planBulkCreateSchema: z.ZodArray<z.ZodObject<{
         yearly: "yearly";
     }>;
     time: z.ZodNullable<z.ZodString>;
+    status: z.ZodEnum<{
+        abandoned: "abandoned";
+        active: "active";
+        completed: "completed";
+    }>;
     junctionIdArray: z.ZodArray<z.ZodUUID>;
 }, z.core.$strip>>;
 export declare const updatePlanSchema: z.ZodObject<{
     title: z.ZodString;
     description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    status: z.ZodEnum<{
+        abandoned: "abandoned";
+        active: "active";
+        completed: "completed";
+    }>;
 }, z.core.$strip>;
 export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
 export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;

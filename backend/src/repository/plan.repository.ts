@@ -2,6 +2,7 @@ import { eq, inArray, and, or } from "drizzle-orm";
 import { getDb } from "../db";
 import { plans, planRelations, reflectionPlans, reflections } from "../db/schema";
 import { toIds } from "../lib/utils";
+import type { updatePlanSchemaType } from "@tamaldip/uvsu-common";
  
 export type NewPlan = typeof plans.$inferInsert;
 export type Plan = typeof plans.$inferSelect;
@@ -154,5 +155,19 @@ export const PlanRepository = {
         });
     },
 
+    async updateOnePlan(rows: updatePlanSchemaType, planId: string, userId: string) {
+            const [reflection] = await getDb()
+                .update(plans)
+                .set(rows)
+                .where(
+                    and(
+                        eq(reflections.userId, userId),
+                        eq(reflections.id, planId)
+                    )
+                )
+                .returning();
+            
+            return reflection;
+    }
     
 }
