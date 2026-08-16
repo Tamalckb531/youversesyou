@@ -90,6 +90,17 @@ export const PlanRepository = {
         };
     },
 
+    async findOnePlanByUserIdWithoutCon(planId: string, userId: string) {
+        return await getDb()
+            .select()
+            .from(plans)
+            .where(
+                and(
+                    eq(plans.id, planId),
+                    eq(plans.userId, userId),
+                ),
+            );
+    },
 
     async findPlansByIds(userId: string, ids: string[]) {
         if (ids.length === 0) return [];
@@ -142,4 +153,6 @@ export const PlanRepository = {
             return results;
         });
     },
+
+    
 }
