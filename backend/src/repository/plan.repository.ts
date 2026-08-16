@@ -6,6 +6,13 @@ export type NewPlan = typeof plans.$inferInsert;
 export type Plan = typeof plans.$inferSelect;
 
 export const PlanRepository = {
+    async findAllPlansByUserId(userId: string) {
+        return await getDb()
+            .select()
+            .from(plans)
+            .where(eq(plans.userId, userId));
+    },
+
     async findPlansByIds(userId: string, ids: string[]) {
         if (ids.length === 0) return [];
         return await getDb()
