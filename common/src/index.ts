@@ -151,8 +151,15 @@ export const planBulkCreateSchema = z
     { message: "all plans in a single bulk request must share the same type" },
   );
 
+export const updatePlanSchema = planCreateItemSchema.omit({
+  type:true,
+  time: true,
+  junctionIdArray:true
+})
+
 export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
 export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;
+export type updatePlanSchema = z.infer<typeof updatePlanSchema>;
 
 export interface PlanResponseDTO {
   id: string;
