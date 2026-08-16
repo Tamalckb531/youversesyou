@@ -31,9 +31,9 @@ export const ReflectionRepository = {
         if (ids.length === 0) return [];
 
         return await getDb()
-        .select({ id: reflections.id })
-        .from(reflections)
-        .where(and(eq(reflections.userId, userId), inArray(reflections.id, ids)));
+            .select({ id: reflections.id })
+            .from(reflections)
+            .where(and(eq(reflections.userId, userId), inArray(reflections.id, ids)));
     },
 
     async bulkCreate(rows: NewReflection[]) {

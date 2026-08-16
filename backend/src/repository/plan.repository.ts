@@ -9,9 +9,9 @@ export const PlanRepository = {
     async findPlansByIds(userId: string, ids: string[]) {
         if (ids.length === 0) return [];
         return await getDb()
-        .select({ id: plans.id, type: plans.type })
-        .from(plans)
-        .where(and(eq(plans.userId, userId), inArray(plans.id, ids)));
+            .select({ id: plans.id, type: plans.type })
+            .from(plans)
+            .where(and(eq(plans.userId, userId), inArray(plans.id, ids)));
     },
 
     async bulkCreateWithJunctions(
