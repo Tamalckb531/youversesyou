@@ -108,3 +108,7 @@ export const PlanPostController = async (c: Context) => {
         return c.json({ success: false, msg: responseMsg.generic.error.GENERIC_500, data: null }, 500);
     }
 };
+
+export const PlanPatchController = async (c: Context) => {
+
+}
