@@ -3,6 +3,10 @@ import { planBulkCreateSchema } from "@tamaldip/uvsu-common";
 import { PlanService, PlanValidationError } from "../service/plan.service";
 import { responseMsg } from "../lib/constants";
 
+export const PlanGetController = async (c: Context) => {
+    
+}
+
 export const PlanPostController = async (c: Context) => {
     try {
         const user = c.get("user");
