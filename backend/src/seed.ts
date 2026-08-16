@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { getDb } from "./db";
 import { reflections, users } from "./db/schema";
-import { TEST_REFLECTION, TEST_USER } from "./test-data";
+import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "./test-data";
 
 
 async function seed() {
@@ -19,6 +19,7 @@ async function seed() {
 
   for (let i = 1; i <= 4; i++) {
     reflectionRows.push({
+      id:TEST_REFLECTION_IDS[i-1], //? 0 1 2 3
       userId: TEST_USER.id,
       type: "goal" as const,
       title: `Goal ${i}`,
@@ -35,6 +36,7 @@ async function seed() {
   // Pain Points
   for (let i = 1; i <= 5; i++) {
     reflectionRows.push({
+      id:TEST_REFLECTION_IDS[i+3], //? 4 5 6 7 8
       userId: TEST_USER.id,
       type: "pain_point" as const,
       title: `Pain Point ${i}`,
@@ -51,6 +53,7 @@ async function seed() {
   // Dreams
   for (let i = 1; i <= 5; i++) {
     reflectionRows.push({
+      id:TEST_REFLECTION_IDS[i+8], //? 9 10 11 12 13 
       userId: TEST_USER.id,
       type: "dream" as const,
       title: `Dream ${i}`,
