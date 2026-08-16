@@ -56,3 +56,4 @@ export function dedupeIds(ids: string[]): string[] {
   return Array.from(new Set(ids));
 }
  
+export const toIds = (items: { id: string }[]): string[] => items.map((item) => item.id);

@@ -1,6 +1,7 @@
-import { eq, inArray, and } from "drizzle-orm";
+import { eq, inArray, and, or } from "drizzle-orm";
 import { getDb } from "../db";
 import { plans, planRelations, reflectionPlans, reflections } from "../db/schema";
+import { toIds } from "../lib/utils";
  
 export type NewPlan = typeof plans.$inferInsert;
 export type Plan = typeof plans.$inferSelect;
@@ -12,6 +13,83 @@ export const PlanRepository = {
             .from(plans)
             .where(eq(plans.userId, userId));
     },
+
+    async findOnePlanByUserId(planId: string, userId: string) {
+        const db = getDb();
+
+        const [plan] = await db
+            .select()
+            .from(plans)
+            .where(
+                and(
+                    eq(plans.id, planId),
+                    eq(plans.userId, userId),
+                ),
+            );
+
+        if (!plan) {
+            return null;
+        }
+
+        if (plan.type === "overall") {
+            const connections = await db
+                .select({
+                    id: reflectionPlans.reflectionId,
+                })
+                .from(reflectionPlans)
+                .where(eq(reflectionPlans.planId, plan.id));
+
+            const connectionIds = connections.map(({ id }) => id);
+
+            const relatedConnections =
+                connectionIds.length > 0
+                    ? await db
+                        .select()
+                        .from(reflections)
+                        .where(
+                            and(
+                                eq(reflections.userId, userId),
+                                inArray(reflections.id, connectionIds),
+                            ),
+                        )
+                    : [];
+
+            return {
+                plan,
+                relatedConnections,
+            };
+        }
+
+        const connections = await db
+            .select({
+                id: planRelations.parentPlanId,
+            })
+            .from(planRelations)
+            .where(
+                eq(planRelations.childPlanId, plan.id),
+            );
+
+        const connectionIds = connections.map(({ id }) => id);
+
+        const relatedConnections =
+            connectionIds.length > 0
+                ? await db
+                    .select()
+                    .from(plans)
+                    .where(
+                        and(
+                            eq(plans.userId, userId),
+                            inArray(plans.id, connectionIds),
+                        ),
+                    )
+                : [];
+
+        return {
+            plan,
+            relatedConnections,
+        };
+    },
+
 
     async findPlansByIds(userId: string, ids: string[]) {
         if (ids.length === 0) return [];
