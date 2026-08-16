@@ -158,13 +158,13 @@ export declare const planBulkCreateSchema: z.ZodArray<z.ZodObject<{
     junctionIdArray: z.ZodArray<z.ZodUUID>;
 }, z.core.$strip>>;
 export declare const updatePlanSchema: z.ZodObject<{
-    title: z.ZodString;
-    description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
-    status: z.ZodEnum<{
+    title: z.ZodOptional<z.ZodString>;
+    description: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
+    status: z.ZodOptional<z.ZodEnum<{
         abandoned: "abandoned";
         active: "active";
         completed: "completed";
-    }>;
+    }>>;
 }, z.core.$strip>;
 export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
 export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;

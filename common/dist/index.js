@@ -69,7 +69,7 @@ const yearRegex = /^20\d{2}$/;
 const monthRegex = /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/;
 const weekRegex = /^Week([1-9]|[1-4][0-9]|5[0-2])$/;
 const planTimeSchema = z.string().nullable();
-export const planCreateItemSchema = z
+const planCreateItemBaseSchema = z
     .object({
     title: z.string().trim().min(1, "title is required").max(200),
     description: z.string().trim().max(2000).nullable().optional(),
@@ -82,7 +82,8 @@ export const planCreateItemSchema = z
         .array(z.uuid("junctionIdArray must contain valid uuids"))
         .min(1, "at least one parent/reflection link is required")
         .max(5),
-})
+});
+export const planCreateItemSchema = planCreateItemBaseSchema
     .superRefine((val, ctx) => {
     if (val.type === "overall") {
         if (val.time !== null) {
@@ -118,8 +119,8 @@ export const planBulkCreateSchema = z
     .min(1, "at least one plan is required")
     .max(50, "cannot create more than 50 plans at once")
     .refine((items) => items.every((i) => i.type === items[0].type), { message: "all plans in a single bulk request must share the same type" });
-export const updatePlanSchema = planCreateItemSchema.omit({
+export const updatePlanSchema = planCreateItemBaseSchema.omit({
     type: true,
     time: true,
     junctionIdArray: true
-});
+}).partial();

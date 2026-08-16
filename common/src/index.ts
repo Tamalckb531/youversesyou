@@ -98,7 +98,7 @@ const weekRegex = /^Week([1-9]|[1-4][0-9]|5[0-2])$/;
 
 const planTimeSchema = z.string().nullable();
 
-export const planCreateItemSchema = z
+const planCreateItemBaseSchema = z
   .object({
     title: z.string().trim().min(1, "title is required").max(200),
     description: z.string().trim().max(2000).nullable().optional(),
@@ -111,7 +111,9 @@ export const planCreateItemSchema = z
       .array(z.uuid("junctionIdArray must contain valid uuids"))
       .min(1, "at least one parent/reflection link is required")
       .max(5),
-  })
+  });
+
+export const planCreateItemSchema = planCreateItemBaseSchema
   .superRefine((val, ctx) => {
     if (val.type === "overall") {
       if (val.time !== null) {
@@ -153,11 +155,11 @@ export const planBulkCreateSchema = z
     { message: "all plans in a single bulk request must share the same type" },
   );
 
-export const updatePlanSchema = planCreateItemSchema.omit({
-  type:true,
+export const updatePlanSchema = planCreateItemBaseSchema.omit({
+  type: true,
   time: true,
-  junctionIdArray:true
-})
+  junctionIdArray: true
+}).partial();
 
 export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
 export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;
