@@ -1,8 +1,8 @@
-
-import type { PlanBulkCreateInput, PlanType } from "@tamaldip/uvsu-common";
+import type { PlanBulkCreateInput, PlanType, updatePlanSchemaType } from "@tamaldip/uvsu-common";
 import { PlanRepository } from "../repository/plan.repository";
 import { toNewPlan, dedupeIds } from "../lib/utils";
 import { ReflectionRepository } from "../repository/reflection.repository";
+import { responseMsg } from "../lib/constants";
  
 export class PlanValidationError extends Error {
   constructor(message: string) {
@@ -75,4 +75,10 @@ export const PlanService = {
     
         return PlanRepository.bulkCreateWithJunctions(userId, preparedItems);
     },
+
+    async updatePlan(userId: string, planId: string, item: updatePlanSchemaType) {
+        const currentPlan = await PlanRepository.findOnePlanByUserIdWithoutCon(planId, userId);        
+        if (!currentPlan) throw new Error(responseMsg.plan.error.NO_PLAN_ID);
+        return ReflectionRepository.updateOnePlan(item, planId, userId);
+    }
 }

@@ -148,7 +148,7 @@ export declare const updatePlanSchema: z.ZodObject<{
 }, z.core.$strip>;
 export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
 export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;
-export type updatePlanSchema = z.infer<typeof updatePlanSchema>;
+export type updatePlanSchemaType = z.infer<typeof updatePlanSchema>;
 export interface PlanResponseDTO {
     id: string;
     userId: string;

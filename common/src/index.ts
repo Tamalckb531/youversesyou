@@ -159,7 +159,7 @@ export const updatePlanSchema = planCreateItemSchema.omit({
 
 export type PlanCreateItem = z.infer<typeof planCreateItemSchema>;
 export type PlanBulkCreateInput = z.infer<typeof planBulkCreateSchema>;
-export type updatePlanSchema = z.infer<typeof updatePlanSchema>;
+export type updatePlanSchemaType = z.infer<typeof updatePlanSchema>;
 
 export interface PlanResponseDTO {
   id: string;
