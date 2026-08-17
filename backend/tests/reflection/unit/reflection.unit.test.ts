@@ -6,7 +6,6 @@ import { reflectionService } from "../../../src/service/reflection.service";
 import { createdReflections, INSERT_REFLECTION_ARRAY, TEST_REFLECTION, TEST_USER } from "../../../src/test-data";
 import { responseMsg } from "../../../src/lib/constants";
 
-// Mock the service layer
 vi.mock("../../../src/service/reflection.service", () => ({
   reflectionService: {
     listForUser: vi.fn(),
@@ -15,7 +14,6 @@ vi.mock("../../../src/service/reflection.service", () => ({
     updateOne: vi.fn(),
   },
 }));
-
 
 describe("ReflectionsGetController", () => {
   beforeEach(() => {
@@ -742,5 +740,5 @@ describe("ReflectionsPatchController", () => {
 
         expect(response.status).toBe(500);
     });
-  });
+});
 
