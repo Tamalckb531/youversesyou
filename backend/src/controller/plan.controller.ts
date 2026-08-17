@@ -60,7 +60,8 @@ export const PlanGetOneController = async (c: Context) => {
     catch (err) {
         return c.json({
             success: false,
-            msg: err instanceof Error ? err.message : responseMsg.generic.error.GENERIC_500, data:null
+            msg: err instanceof Error ? err.message : responseMsg.generic.error.GENERIC_500,
+            data: null
         }, 500); 
     }
 }

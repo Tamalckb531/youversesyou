@@ -3,6 +3,7 @@ import { getDb } from "../db";
 import { plans, planRelations, reflectionPlans, reflections } from "../db/schema";
 import { toIds } from "../lib/utils";
 import type { updatePlanSchemaType } from "@tamaldip/uvsu-common";
+import { responseMsg } from "../lib/constants";
  
 export type NewPlan = typeof plans.$inferInsert;
 export type Plan = typeof plans.$inferSelect;
@@ -29,7 +30,7 @@ export const PlanRepository = {
             );
 
         if (!plan) {
-            return null;
+            throw new Error(responseMsg.plan.error.NO_PLAN_ID)
         }
 
         if (plan.type === "overall") {
