@@ -128,113 +128,113 @@ describe("GET /api/v1/plans/:id", () => {
     });
 });
 
-// describe("POST /api/v1/plans/", () => {
-//     it("should create overall plans linked to reflections", async () => {
-//         const res = await app.request("/api/v1/plans/", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(INSERT_OVERALL_PLAN_ARRAY),
-//         });
+describe("POST /api/v1/plans/", () => {
+    it("should create overall plans linked to reflections", async () => {
+        const res = await app.request("/api/v1/plans/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(INSERT_OVERALL_PLAN_ARRAY),
+        });
 
-//         expect(res.status).toBe(201);
+        expect(res.status).toBe(201);
 
-//         const body = await res.json();
+        const body = await res.json();
 
-//         expect(body.success).toBe(true);
-//         expect(body.msg).toBe(responseMsg.plan.success.CREATED_BULK);
-//         expect(body.data).toHaveLength(1);
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.plan.success.CREATED_BULK);
+        expect(body.data).toHaveLength(1);
 
-//         const [createdPlan] = body.data;
+        const [createdPlan] = body.data;
 
-//         expect(createdPlan.id).toBeDefined();
-//         expect(createdPlan.userId).toBe(TEST_USER.id);
-//         expect(createdPlan.type).toBe("overall");
-//         expect(createdPlan.time).toBeNull();
-//         expect(createdPlan.status).toBe("active");
-//         expect(createdPlan.linkedIds).toEqual(
-//             expect.arrayContaining(INSERT_OVERALL_PLAN_ARRAY[0].junctionIdArray),
-//         );
-//     });
+        expect(createdPlan.id).toBeDefined();
+        expect(createdPlan.userId).toBe(TEST_USER.id);
+        expect(createdPlan.type).toBe("overall");
+        expect(createdPlan.time).toBeNull();
+        expect(createdPlan.status).toBe("active");
+        expect(createdPlan.linkedIds).toEqual(
+            expect.arrayContaining(INSERT_OVERALL_PLAN_ARRAY[0].junctionIdArray),
+        );
+    });
 
-//     it("should create yearly plans linked to overall parent plans", async () => {
-//         const res = await app.request("/api/v1/plans/", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(INSERT_YEARLY_PLAN_ARRAY),
-//         });
+    it("should create yearly plans linked to overall parent plans", async () => {
+        const res = await app.request("/api/v1/plans/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(INSERT_YEARLY_PLAN_ARRAY),
+        });
 
-//         expect(res.status).toBe(201);
+        expect(res.status).toBe(201);
 
-//         const body = await res.json();
+        const body = await res.json();
 
-//         expect(body.success).toBe(true);
-//         expect(body.msg).toBe(responseMsg.plan.success.CREATED_BULK);
-//         expect(body.data).toHaveLength(1);
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.plan.success.CREATED_BULK);
+        expect(body.data).toHaveLength(1);
 
-//         const [createdPlan] = body.data;
+        const [createdPlan] = body.data;
 
-//         expect(createdPlan.userId).toBe(TEST_USER.id);
-//         expect(createdPlan.type).toBe("yearly");
-//         expect(createdPlan.time).toBe("2028");
-//         expect(createdPlan.linkedIds).toEqual([TEST_PLAN_IDS[0]]);
-//     });
+        expect(createdPlan.userId).toBe(TEST_USER.id);
+        expect(createdPlan.type).toBe("yearly");
+        expect(createdPlan.time).toBe("2028");
+        expect(createdPlan.linkedIds).toEqual([TEST_PLAN_IDS[0]]);
+    });
 
-//     it("should return error when junction ids are invalid", async () => {
-//         const res = await app.request("/api/v1/plans/", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify([
-//                 {
-//                     ...INSERT_OVERALL_PLAN_ARRAY[0],
-//                     junctionIdArray: [
-//                         "aaaaaaaa-1111-4111-8111-111111111111",
-//                     ],
-//                 },
-//             ]),
-//         });
+    it("should return error when junction ids are invalid", async () => {
+        const res = await app.request("/api/v1/plans/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify([
+                {
+                    ...INSERT_OVERALL_PLAN_ARRAY[0],
+                    junctionIdArray: [
+                        "aaaaaaaa-1111-4111-8111-111111111111",
+                    ],
+                },
+            ]),
+        });
 
-//         expect(res.status).toBe(400);
+        expect(res.status).toBe(400);
 
-//         const body = await res.json();
+        const body = await res.json();
 
-//         expect(body.success).toBe(false);
-//         expect(body.msg).toBe(responseMsg.plan.error.INVALID_JUNCTION_IDS);
-//         expect(body.data).toBeNull();
-//     });
+        expect(body.success).toBe(false);
+        expect(body.msg).toBe(responseMsg.plan.error.INVALID_JUNCTION_IDS);
+        expect(body.data).toBeNull();
+    });
 
-//     it("should return error when parent plan type is invalid", async () => {
-//         const res = await app.request("/api/v1/plans/", {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify([
-//                 {
-//                     title: "Bad Yearly Plan",
-//                     description: "Linked to monthly instead of overall",
-//                     type: "yearly",
-//                     time: "2028",
-//                     status: "active",
-//                     junctionIdArray: [TEST_PLAN_IDS[4]],
-//                 },
-//             ]),
-//         });
+    it("should return error when parent plan type is invalid", async () => {
+        const res = await app.request("/api/v1/plans/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify([
+                {
+                    title: "Bad Yearly Plan",
+                    description: "Linked to monthly instead of overall",
+                    type: "yearly",
+                    time: "2028",
+                    status: "active",
+                    junctionIdArray: [TEST_PLAN_IDS[4]],
+                },
+            ]),
+        });
 
-//         expect(res.status).toBe(400);
+        expect(res.status).toBe(400);
 
-//         const body = await res.json();
+        const body = await res.json();
 
-//         expect(body.success).toBe(false);
-//         expect(body.msg).toBe(responseMsg.plan.error.INVALID_PARENT_TYPE);
-//         expect(body.data).toBeNull();
-//     });
-// });
+        expect(body.success).toBe(false);
+        expect(body.msg).toBe(responseMsg.plan.error.INVALID_PARENT_TYPE);
+        expect(body.data).toBeNull();
+    });
+});
 
 // describe("PATCH /api/v1/plans/:id", () => {
 //     it("should update a plan title and description", async () => {
