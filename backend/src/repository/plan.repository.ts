@@ -3,6 +3,7 @@ import { getDb } from "../db";
 import { plans, planRelations, reflectionPlans, reflections } from "../db/schema";
 import { toIds } from "../lib/utils";
 import type { updatePlanSchemaType } from "@tamaldip/uvsu-common";
+import { responseMsg } from "../lib/constants";
  
 export type NewPlan = typeof plans.$inferInsert;
 export type Plan = typeof plans.$inferSelect;
@@ -29,7 +30,7 @@ export const PlanRepository = {
             );
 
         if (!plan) {
-            return null;
+            throw new Error(responseMsg.plan.error.NO_PLAN_ID)
         }
 
         if (plan.type === "overall") {
@@ -92,7 +93,7 @@ export const PlanRepository = {
     },
 
     async findOnePlanByUserIdWithoutCon(planId: string, userId: string) {
-        return await getDb()
+        const [plan] = await getDb()
             .select()
             .from(plans)
             .where(
@@ -101,6 +102,8 @@ export const PlanRepository = {
                     eq(plans.userId, userId),
                 ),
             );
+
+        return plan;
     },
 
     async findPlansByIds(userId: string, ids: string[]) {
@@ -156,18 +159,18 @@ export const PlanRepository = {
     },
 
     async updateOnePlan(rows: updatePlanSchemaType, planId: string, userId: string) {
-            const [reflection] = await getDb()
+            const [plan] = await getDb()
                 .update(plans)
                 .set(rows)
                 .where(
                     and(
-                        eq(reflections.userId, userId),
-                        eq(reflections.id, planId)
+                        eq(plans.userId, userId),
+                        eq(plans.id, planId)
                     )
                 )
                 .returning();
             
-            return reflection;
+            return plan;
     }
     
 }

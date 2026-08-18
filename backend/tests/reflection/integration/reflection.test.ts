@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { app } from "../../src/index";
-import { INSERT_REFLECTION_ARRAY, TEST_REFLECTION, TEST_USER } from "../../src/test-data";
-import { responseMsg } from "../../src/lib/constants";
-import { getDb } from "../../src/db";
-import { reflections } from "../../src/db/schema";
+import { app } from "../../../src/index";
+import { INSERT_REFLECTION_ARRAY, TEST_REFLECTION, TEST_USER } from "../../../src/test-data";
+import { responseMsg } from "../../../src/lib/constants";
+import { getDb } from "../../../src/db";
+import { reflections } from "../../../src/db/schema";
 import { eq } from "drizzle-orm";
 
-describe("GET /api/v1/reflections", () => {
+describe("GET /api/v1/reflections/", () => {
     it("should return all reflections of the test users", async () => {
         const res = await app.request("/api/v1/reflections/", {
             method: "GET",
@@ -20,7 +20,9 @@ describe("GET /api/v1/reflections", () => {
 
         expect(body.data.every((r: any) => r.userId === TEST_USER.id)).toBe(true);
     });
+})
 
+describe("GET /api/v1/reflections/:id", () => {
     it("should return one reflections of the test users", async () => {
         const res = await app.request(`/api/v1/reflections/${TEST_REFLECTION.id}`, {
             method: "GET",
@@ -34,7 +36,9 @@ describe("GET /api/v1/reflections", () => {
 
         expect(body.data.userId === TEST_USER.id).toBe(true);
     });
+})
 
+describe("POST /api/v1/reflections/", () => {
     it("should create multiple reflections for the test user", async () => {
         const res = await app.request("/api/v1/reflections/", {
             method: "POST",
@@ -64,7 +68,9 @@ describe("GET /api/v1/reflections", () => {
         expect(body.data[1].type).toBe("pain_point");
         expect(body.data[2].type).toBe("dream");
     });
+})
 
+describe("PATCH /api/v1/reflections/:id", () => {
     it("should update a reflection when it is older than 120 days", async () => {
         //? Find one real reflection belonging to the test user
         const [reflection] = await getDb()
@@ -131,3 +137,4 @@ describe("GET /api/v1/reflections", () => {
         expect(updatedReflection.userId).toBe(TEST_USER.id);
     });
 })
+

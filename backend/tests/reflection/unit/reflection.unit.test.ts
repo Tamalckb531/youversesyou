@@ -1,13 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Context } from "hono";
 
-import { ReflectionsGetController, ReflectionsGetOneController, ReflectionsPatchController, ReflectionsPostController } from "../../src/controller/reflection.controller";
-import { reflectionService } from "../../src/service/reflection.service";
-import { createdReflections, INSERT_REFLECTION_ARRAY, TEST_REFLECTION, TEST_USER } from "../../src/test-data";
-import { responseMsg } from "../../src/lib/constants";
+import { ReflectionsGetController, ReflectionsGetOneController, ReflectionsPatchController, ReflectionsPostController } from "../../../src/controller/reflection.controller";
+import { reflectionService } from "../../../src/service/reflection.service";
+import { createdReflections, INSERT_REFLECTION_ARRAY, TEST_REFLECTION, TEST_USER } from "../../../src/test-data";
+import { responseMsg } from "../../../src/lib/constants";
 
-// Mock the service layer
-vi.mock("../../src/service/reflection.service", () => ({
+vi.mock("../../../src/service/reflection.service", () => ({
   reflectionService: {
     listForUser: vi.fn(),
     oneForUser: vi.fn(),
@@ -15,7 +14,6 @@ vi.mock("../../src/service/reflection.service", () => ({
     updateOne: vi.fn(),
   },
 }));
-
 
 describe("ReflectionsGetController", () => {
   beforeEach(() => {
@@ -742,5 +740,5 @@ describe("ReflectionsPatchController", () => {
 
         expect(response.status).toBe(500);
     });
-  });
+});
 
