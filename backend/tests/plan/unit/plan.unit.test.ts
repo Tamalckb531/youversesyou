@@ -22,7 +22,7 @@ vi.mock("../../../src/service/plan.service", async (importOriginal) => {
         PlanService: {
             allPlans: vi.fn(),
             onePlan: vi.fn(),
-            // bulkCreate: vi.fn(),
+            bulkCreate: vi.fn(),
             // updatePlan: vi.fn(),
         },
     };
@@ -418,293 +418,293 @@ describe("PlanGetOneController", () => {
     });
 });
 
-// describe("PlanPostController", () => {
-//     beforeEach(() => {
-//         vi.clearAllMocks();
-//     });
+describe("PlanPostController", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-//     function createMockContext(user: any, body: unknown) {
-//         const json = vi.fn();
+    function createMockContext(user: any, body: unknown) {
+        const json = vi.fn();
 
-//         json.mockImplementation((responseBody, status = 200) => ({
-//             status,
-//             body: responseBody,
-//         }));
+        json.mockImplementation((responseBody, status = 200) => ({
+            status,
+            body: responseBody,
+        }));
 
-//         const c = {
-//             get: vi.fn().mockReturnValue(user),
-//             req: {
-//                 json: vi.fn().mockResolvedValue(body),
-//             },
-//             json,
-//         } as unknown as Context;
+        const c = {
+            get: vi.fn().mockReturnValue(user),
+            req: {
+                json: vi.fn().mockResolvedValue(body),
+            },
+            json,
+        } as unknown as Context;
 
-//         return { c, json };
-//     }
+        return { c, json };
+    }
 
-//     it("should return 400 when user id is missing", async () => {
-//         const { c, json } = createMockContext({}, INSERT_OVERALL_PLAN_ARRAY);
+    it("should return 400 when user id is missing", async () => {
+        const { c, json } = createMockContext({}, INSERT_OVERALL_PLAN_ARRAY);
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.generic.error.NO_USER_ID,
-//                 data: null,
-//             },
-//             400,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.NO_USER_ID,
+                data: null,
+            },
+            400,
+        );
 
-//         expect(response.status).toBe(400);
-//         expect(PlanService.bulkCreate).not.toHaveBeenCalled();
-//     });
+        expect(response.status).toBe(400);
+        expect(PlanService.bulkCreate).not.toHaveBeenCalled();
+    });
 
-//     it("should return 400 when request body is invalid", async () => {
-//         const invalidBody = [
-//             {
-//                 type: "invalid_type",
-//                 title: "Invalid Plan",
-//                 time: null,
-//                 status: "active",
-//                 junctionIdArray: [TEST_REFLECTION_IDS[0]],
-//             },
-//         ];
+    it("should return 400 when request body is invalid", async () => {
+        const invalidBody = [
+            {
+                type: "invalid_type",
+                title: "Invalid Plan",
+                time: null,
+                status: "active",
+                junctionIdArray: [TEST_REFLECTION_IDS[0]],
+            },
+        ];
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             invalidBody,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            invalidBody,
+        );
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalled();
-//         expect(response).toEqual(
-//             expect.objectContaining({
-//                 status: 400,
-//                 body: expect.objectContaining({
-//                     success: false,
-//                     data: null,
-//                 }),
-//             }),
-//         );
-//         expect(PlanService.bulkCreate).not.toHaveBeenCalled();
-//     });
+        expect(json).toHaveBeenCalled();
+        expect(response).toEqual(
+            expect.objectContaining({
+                status: 400,
+                body: expect.objectContaining({
+                    success: false,
+                    data: null,
+                }),
+            }),
+        );
+        expect(PlanService.bulkCreate).not.toHaveBeenCalled();
+    });
 
-//     it("should return 400 when request body is valid but not an array", async () => {
-//         const nonArrayBody = INSERT_OVERALL_PLAN_ARRAY[0];
+    it("should return 400 when request body is valid but not an array", async () => {
+        const nonArrayBody = INSERT_OVERALL_PLAN_ARRAY[0];
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             nonArrayBody,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            nonArrayBody,
+        );
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalled();
-//         expect(response).toEqual(
-//             expect.objectContaining({
-//                 status: 400,
-//                 body: expect.objectContaining({
-//                     success: false,
-//                     data: null,
-//                 }),
-//             }),
-//         );
-//         expect(PlanService.bulkCreate).not.toHaveBeenCalled();
-//     });
+        expect(json).toHaveBeenCalled();
+        expect(response).toEqual(
+            expect.objectContaining({
+                status: 400,
+                body: expect.objectContaining({
+                    success: false,
+                    data: null,
+                }),
+            }),
+        );
+        expect(PlanService.bulkCreate).not.toHaveBeenCalled();
+    });
 
-//     it("should return 400 when batch contains mixed plan types", async () => {
-//         const mixedBody = [
-//             ...INSERT_OVERALL_PLAN_ARRAY,
-//             {
-//                 title: "Yearly Plan",
-//                 description: "Test yearly plan",
-//                 type: "yearly" as const,
-//                 time: "2028",
-//                 status: "active" as const,
-//                 junctionIdArray: [TEST_PLAN_IDS[0]],
-//             },
-//         ];
+    it("should return 400 when batch contains mixed plan types", async () => {
+        const mixedBody = [
+            ...INSERT_OVERALL_PLAN_ARRAY,
+            {
+                title: "Yearly Plan",
+                description: "Test yearly plan",
+                type: "yearly" as const,
+                time: "2028",
+                status: "active" as const,
+                junctionIdArray: [TEST_PLAN_IDS[0]],
+            },
+        ];
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             mixedBody,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            mixedBody,
+        );
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalled();
-//         expect(response.status).toBe(400);
-//         expect(PlanService.bulkCreate).not.toHaveBeenCalled();
-//     });
+        expect(json).toHaveBeenCalled();
+        expect(response.status).toBe(400);
+        expect(PlanService.bulkCreate).not.toHaveBeenCalled();
+    });
 
-//     it("should create plans when service succeeds", async () => {
-//         vi.mocked(PlanService.bulkCreate).mockResolvedValue(
-//             createdPlans as any,
-//         );
+    it("should create plans when service succeeds", async () => {
+        vi.mocked(PlanService.bulkCreate).mockResolvedValue(
+            createdPlans as any,
+        );
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(PlanService.bulkCreate).toHaveBeenCalledTimes(1);
-//         expect(PlanService.bulkCreate).toHaveBeenCalledWith(
-//             TEST_USER.id,
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        expect(PlanService.bulkCreate).toHaveBeenCalledTimes(1);
+        expect(PlanService.bulkCreate).toHaveBeenCalledWith(
+            TEST_USER.id,
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: true,
-//                 msg: responseMsg.plan.success.CREATED_BULK,
-//                 data: createdPlans,
-//             },
-//             201,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: true,
+                msg: responseMsg.plan.success.CREATED_BULK,
+                data: createdPlans,
+            },
+            201,
+        );
 
-//         expect(response.status).toBe(201);
-//     });
+        expect(response.status).toBe(201);
+    });
 
-//     it("should return 400 when service throws PlanValidationError for EMPTY_BATCH", async () => {
-//         vi.mocked(PlanService.bulkCreate).mockRejectedValue(
-//             new PlanValidationError("EMPTY_BATCH"),
-//         );
+    it("should return 400 when service throws PlanValidationError for EMPTY_BATCH", async () => {
+        vi.mocked(PlanService.bulkCreate).mockRejectedValue(
+            new PlanValidationError("EMPTY_BATCH"),
+        );
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.plan.error.EMPTY_BATCH,
-//                 data: null,
-//             },
-//             400,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.plan.error.EMPTY_BATCH,
+                data: null,
+            },
+            400,
+        );
 
-//         expect(response.status).toBe(400);
-//     });
+        expect(response.status).toBe(400);
+    });
 
-//     it("should return 400 when service throws PlanValidationError for MIXED_TYPES", async () => {
-//         vi.mocked(PlanService.bulkCreate).mockRejectedValue(
-//             new PlanValidationError("MIXED_TYPES"),
-//         );
+    it("should return 400 when service throws PlanValidationError for MIXED_TYPES", async () => {
+        vi.mocked(PlanService.bulkCreate).mockRejectedValue(
+            new PlanValidationError("MIXED_TYPES"),
+        );
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         await PlanPostController(c);
+        await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.plan.error.MIXED_TYPES,
-//                 data: null,
-//             },
-//             400,
-//         );
-//     });
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.plan.error.MIXED_TYPES,
+                data: null,
+            },
+            400,
+        );
+    });
 
-//     it("should return 400 when service throws PlanValidationError for INVALID_JUNCTION_IDS", async () => {
-//         vi.mocked(PlanService.bulkCreate).mockRejectedValue(
-//             new PlanValidationError("INVALID_JUNCTION_IDS"),
-//         );
+    it("should return 400 when service throws PlanValidationError for INVALID_JUNCTION_IDS", async () => {
+        vi.mocked(PlanService.bulkCreate).mockRejectedValue(
+            new PlanValidationError("INVALID_JUNCTION_IDS"),
+        );
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         await PlanPostController(c);
+        await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.plan.error.INVALID_JUNCTION_IDS,
-//                 data: null,
-//             },
-//             400,
-//         );
-//     });
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.plan.error.INVALID_JUNCTION_IDS,
+                data: null,
+            },
+            400,
+        );
+    });
 
-//     it("should return 400 when service throws PlanValidationError for INVALID_PARENT_TYPE", async () => {
-//         vi.mocked(PlanService.bulkCreate).mockRejectedValue(
-//             new PlanValidationError("INVALID_PARENT_TYPE"),
-//         );
+    it("should return 400 when service throws PlanValidationError for INVALID_PARENT_TYPE", async () => {
+        vi.mocked(PlanService.bulkCreate).mockRejectedValue(
+            new PlanValidationError("INVALID_PARENT_TYPE"),
+        );
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         await PlanPostController(c);
+        await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.plan.error.INVALID_PARENT_TYPE,
-//                 data: null,
-//             },
-//             400,
-//         );
-//     });
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.plan.error.INVALID_PARENT_TYPE,
+                data: null,
+            },
+            400,
+        );
+    });
 
-//     it("should return 500 when service throws an Error", async () => {
-//         vi.mocked(PlanService.bulkCreate).mockRejectedValue(
-//             new Error("Database failed"),
-//         );
+    it("should return 500 when service throws an Error", async () => {
+        vi.mocked(PlanService.bulkCreate).mockRejectedValue(
+            new Error("Database failed"),
+        );
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.generic.error.GENERIC_500,
-//                 data: null,
-//             },
-//             500,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.GENERIC_500,
+                data: null,
+            },
+            500,
+        );
 
-//         expect(response.status).toBe(500);
-//     });
+        expect(response.status).toBe(500);
+    });
 
-//     it("should return generic 500 message for non-Error throws", async () => {
-//         vi.mocked(PlanService.bulkCreate).mockRejectedValue("boom");
+    it("should return generic 500 message for non-Error throws", async () => {
+        vi.mocked(PlanService.bulkCreate).mockRejectedValue("boom");
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             INSERT_OVERALL_PLAN_ARRAY,
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            INSERT_OVERALL_PLAN_ARRAY,
+        );
 
-//         const response = await PlanPostController(c);
+        const response = await PlanPostController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.generic.error.GENERIC_500,
-//                 data: null,
-//             },
-//             500,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.GENERIC_500,
+                data: null,
+            },
+            500,
+        );
 
-//         expect(response.status).toBe(500);
-//     });
-// });
+        expect(response.status).toBe(500);
+    });
+});
 
 // describe("PlanPatchController", () => {
 //     beforeEach(() => {
