@@ -706,184 +706,184 @@ describe("PlanPostController", () => {
     });
 });
 
-// describe("PlanPatchController", () => {
-//     beforeEach(() => {
-//         vi.clearAllMocks();
-//     });
+describe("PlanPatchController", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-//     function createMockContext(
-//         user: any,
-//         planId: string | undefined,
-//         body: unknown,
-//     ) {
-//         const json = vi.fn();
+    function createMockContext(
+        user: any,
+        planId: string | undefined,
+        body: unknown,
+    ) {
+        const json = vi.fn();
 
-//         json.mockImplementation((responseBody, status = 200) => ({
-//             status,
-//             body: responseBody,
-//         }));
+        json.mockImplementation((responseBody, status = 200) => ({
+            status,
+            body: responseBody,
+        }));
 
-//         const c = {
-//             get: vi.fn().mockReturnValue(user),
-//             req: {
-//                 param: vi.fn().mockReturnValue(planId),
-//                 json: vi.fn().mockResolvedValue(body),
-//             },
-//             json,
-//         } as unknown as Context;
+        const c = {
+            get: vi.fn().mockReturnValue(user),
+            req: {
+                param: vi.fn().mockReturnValue(planId),
+                json: vi.fn().mockResolvedValue(body),
+            },
+            json,
+        } as unknown as Context;
 
-//         return { c, json };
-//     }
+        return { c, json };
+    }
 
-//     it("should return 400 when plan id is missing", async () => {
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             undefined,
-//             { title: "Updated title" },
-//         );
+    it("should return 400 when plan id is missing", async () => {
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            undefined,
+            { title: "Updated title" },
+        );
 
-//         const response = await PlanPatchController(c);
+        const response = await PlanPatchController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.plan.error.NO_PLAN_ID,
-//                 data: null,
-//             },
-//             400,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.plan.error.NO_PLAN_ID,
+                data: null,
+            },
+            400,
+        );
 
-//         expect(PlanService.updatePlan).not.toHaveBeenCalled();
-//         expect(response.status).toBe(400);
-//     });
+        expect(PlanService.updatePlan).not.toHaveBeenCalled();
+        expect(response.status).toBe(400);
+    });
 
-//     it("should return 400 when user id is missing", async () => {
-//         const { c, json } = createMockContext(
-//             {},
-//             TEST_PLAN_IDS[0],
-//             { title: "Updated title" },
-//         );
+    it("should return 400 when user id is missing", async () => {
+        const { c, json } = createMockContext(
+            {},
+            TEST_PLAN_IDS[0],
+            { title: "Updated title" },
+        );
 
-//         const response = await PlanPatchController(c);
+        const response = await PlanPatchController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.generic.error.NO_USER_ID,
-//                 data: null,
-//             },
-//             400,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.NO_USER_ID,
+                data: null,
+            },
+            400,
+        );
 
-//         expect(PlanService.updatePlan).not.toHaveBeenCalled();
-//         expect(response.status).toBe(400);
-//     });
+        expect(PlanService.updatePlan).not.toHaveBeenCalled();
+        expect(response.status).toBe(400);
+    });
 
-//     it("should return 400 when request body is invalid", async () => {
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             TEST_PLAN_IDS[0],
-//             { title: "" },
-//         );
+    it("should return 400 when request body is invalid", async () => {
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_PLAN_IDS[0],
+            { title: "" },
+        );
 
-//         const response = await PlanPatchController(c);
+        const response = await PlanPatchController(c);
 
-//         expect(response.status).toBe(400);
-//         expect(json).toHaveBeenCalled();
-//         expect(PlanService.updatePlan).not.toHaveBeenCalled();
-//     });
+        expect(response.status).toBe(400);
+        expect(json).toHaveBeenCalled();
+        expect(PlanService.updatePlan).not.toHaveBeenCalled();
+    });
 
-//     it("should update plan when service succeeds", async () => {
-//         const updatedPlan = {
-//             id: TEST_PLAN_IDS[0],
-//             userId: TEST_USER.id,
-//             title: "Updated Plan Title",
-//             description: "Updated description",
-//             type: "overall",
-//             time: null,
-//             status: "active",
-//         };
+    it("should update plan when service succeeds", async () => {
+        const updatedPlan = {
+            id: TEST_PLAN_IDS[0],
+            userId: TEST_USER.id,
+            title: "Updated Plan Title",
+            description: "Updated description",
+            type: "overall",
+            time: null,
+            status: "active",
+        };
 
-//         vi.mocked(PlanService.updatePlan).mockResolvedValue(updatedPlan as any);
+        vi.mocked(PlanService.updatePlan).mockResolvedValue(updatedPlan as any);
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             TEST_PLAN_IDS[0],
-//             {
-//                 title: "Updated Plan Title",
-//                 description: "Updated description",
-//             },
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_PLAN_IDS[0],
+            {
+                title: "Updated Plan Title",
+                description: "Updated description",
+            },
+        );
 
-//         const response = await PlanPatchController(c);
+        const response = await PlanPatchController(c);
 
-//         expect(PlanService.updatePlan).toHaveBeenCalledTimes(1);
-//         expect(PlanService.updatePlan).toHaveBeenCalledWith(
-//             TEST_USER.id,
-//             TEST_PLAN_IDS[0],
-//             {
-//                 title: "Updated Plan Title",
-//                 description: "Updated description",
-//             },
-//         );
+        expect(PlanService.updatePlan).toHaveBeenCalledTimes(1);
+        expect(PlanService.updatePlan).toHaveBeenCalledWith(
+            TEST_USER.id,
+            TEST_PLAN_IDS[0],
+            {
+                title: "Updated Plan Title",
+                description: "Updated description",
+            },
+        );
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: true,
-//                 msg: responseMsg.plan.success.UPDATE_ONE,
-//                 data: updatedPlan,
-//             },
-//             201,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: true,
+                msg: responseMsg.plan.success.UPDATE_ONE,
+                data: updatedPlan,
+            },
+            201,
+        );
 
-//         expect(response.status).toBe(201);
-//     });
+        expect(response.status).toBe(201);
+    });
 
-//     it("should return 500 when service throws an Error", async () => {
-//         vi.mocked(PlanService.updatePlan).mockRejectedValue(
-//             new Error("Database failed"),
-//         );
+    it("should return 500 when service throws an Error", async () => {
+        vi.mocked(PlanService.updatePlan).mockRejectedValue(
+            new Error("Database failed"),
+        );
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             TEST_PLAN_IDS[0],
-//             { title: "Updated title" },
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_PLAN_IDS[0],
+            { title: "Updated title" },
+        );
 
-//         const response = await PlanPatchController(c);
+        const response = await PlanPatchController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: "Database failed",
-//                 data: null,
-//             },
-//             500,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: "Database failed",
+                data: null,
+            },
+            500,
+        );
 
-//         expect(response.status).toBe(500);
-//     });
+        expect(response.status).toBe(500);
+    });
 
-//     it("should return generic 500 when service throws a non-Error value", async () => {
-//         vi.mocked(PlanService.updatePlan).mockRejectedValue("boom");
+    it("should return generic 500 when service throws a non-Error value", async () => {
+        vi.mocked(PlanService.updatePlan).mockRejectedValue("boom");
 
-//         const { c, json } = createMockContext(
-//             { id: TEST_USER.id },
-//             TEST_PLAN_IDS[0],
-//             { title: "Updated title" },
-//         );
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_PLAN_IDS[0],
+            { title: "Updated title" },
+        );
 
-//         const response = await PlanPatchController(c);
+        const response = await PlanPatchController(c);
 
-//         expect(json).toHaveBeenCalledWith(
-//             {
-//                 success: false,
-//                 msg: responseMsg.generic.error.GENERIC_500,
-//                 data: null,
-//             },
-//             500,
-//         );
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.GENERIC_500,
+                data: null,
+            },
+            500,
+        );
 
-//         expect(response.status).toBe(500);
-//     });
-// });
+        expect(response.status).toBe(500);
+    });
+});
