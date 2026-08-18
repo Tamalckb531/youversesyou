@@ -236,77 +236,77 @@ describe("POST /api/v1/plans/", () => {
     });
 });
 
-// describe("PATCH /api/v1/plans/:id", () => {
-//     it("should update a plan title and description", async () => {
-//         const planId = TEST_PLAN_IDS[0];
+describe("PATCH /api/v1/plans/:id", () => {
+    it("should update a plan title and description", async () => {
+        const planId = TEST_PLAN_IDS[0];
 
-//         const res = await app.request(`/api/v1/plans/${planId}`, {
-//             method: "PATCH",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(UPDATE_PLAN_BODY),
-//         });
+        const res = await app.request(`/api/v1/plans/${planId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(UPDATE_PLAN_BODY),
+        });
 
-//         expect(res.status).toBe(201);
+        expect(res.status).toBe(201);
 
-//         const body = await res.json();
+        const body = await res.json();
 
-//         expect(body.success).toBe(true);
-//         expect(body.msg).toBe(responseMsg.plan.success.UPDATE_ONE);
-//         expect(body.data.title).toBe(UPDATE_PLAN_BODY.title);
-//         expect(body.data.description).toBe(UPDATE_PLAN_BODY.description);
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.plan.success.UPDATE_ONE);
+        expect(body.data.title).toBe(UPDATE_PLAN_BODY.title);
+        expect(body.data.description).toBe(UPDATE_PLAN_BODY.description);
 
-//         const [updatedPlan] = await getDb()
-//             .select({
-//                 id: plans.id,
-//                 title: plans.title,
-//                 description: plans.description,
-//                 userId: plans.userId,
-//             })
-//             .from(plans)
-//             .where(eq(plans.id, planId));
+        const [updatedPlan] = await getDb()
+            .select({
+                id: plans.id,
+                title: plans.title,
+                description: plans.description,
+                userId: plans.userId,
+            })
+            .from(plans)
+            .where(eq(plans.id, planId));
 
-//         expect(updatedPlan.id).toBe(planId);
-//         expect(updatedPlan.title).toBe(UPDATE_PLAN_BODY.title);
-//         expect(updatedPlan.description).toBe(UPDATE_PLAN_BODY.description);
-//         expect(updatedPlan.userId).toBe(TEST_USER.id);
-//     });
+        expect(updatedPlan.id).toBe(planId);
+        expect(updatedPlan.title).toBe(UPDATE_PLAN_BODY.title);
+        expect(updatedPlan.description).toBe(UPDATE_PLAN_BODY.description);
+        expect(updatedPlan.userId).toBe(TEST_USER.id);
+    });
 
-//     it("should return error when plan id is invalid", async () => {
-//         const invalidPlanId = "aaaaaaaa-1111-4111-8111-111111111111";
+    it("should return error when plan id is invalid", async () => {
+        const invalidPlanId = "aaaaaaaa-1111-4111-8111-111111111111";
 
-//         const res = await app.request(`/api/v1/plans/${invalidPlanId}`, {
-//             method: "PATCH",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify(UPDATE_PLAN_BODY),
-//         });
+        const res = await app.request(`/api/v1/plans/${invalidPlanId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(UPDATE_PLAN_BODY),
+        });
 
-//         expect(res.status).toBe(500);
+        expect(res.status).toBe(500);
 
-//         const body = await res.json();
+        const body = await res.json();
 
-//         expect(body.success).toBe(false);
-//         expect(body.msg).toBe(responseMsg.plan.error.NO_PLAN_ID);
-//         expect(body.data).toBeNull();
-//     });
+        expect(body.success).toBe(false);
+        expect(body.msg).toBe(responseMsg.plan.error.NO_PLAN_ID);
+        expect(body.data).toBeNull();
+    });
 
-//     it("should return error when request body is invalid", async () => {
-//         const res = await app.request(`/api/v1/plans/${TEST_PLAN_IDS[0]}`, {
-//             method: "PATCH",
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//             body: JSON.stringify({ title: "" }),
-//         });
+    it("should return error when request body is invalid", async () => {
+        const res = await app.request(`/api/v1/plans/${TEST_PLAN_IDS[0]}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title: "" }),
+        });
 
-//         expect(res.status).toBe(400);
+        expect(res.status).toBe(400);
 
-//         const body = await res.json();
+        const body = await res.json();
 
-//         expect(body.success).toBe(false);
-//         expect(body.data).toBeNull();
-//     });
-// });
+        expect(body.success).toBe(false);
+        expect(body.data).toBeNull();
+    });
+});
