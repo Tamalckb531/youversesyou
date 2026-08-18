@@ -23,7 +23,7 @@ vi.mock("../../../src/service/plan.service", async (importOriginal) => {
             allPlans: vi.fn(),
             onePlan: vi.fn(),
             bulkCreate: vi.fn(),
-            // updatePlan: vi.fn(),
+            updatePlan: vi.fn(),
         },
     };
 });
