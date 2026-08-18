@@ -2,20 +2,20 @@ import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "../test-data";
 
 export const TEST_PLAN_IDS = [
   // Overall
-  "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-  "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
 
   // Yearly
-  "cccccccc-cccc-cccc-cccc-cccccccccccc",
-  "dddddddd-dddd-dddd-dddd-dddddddddddd",
+  "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
 
   // Monthly
-  "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
-  "ffffffff-ffff-ffff-ffff-ffffffffffff",
+  "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+  "ffffffff-ffff-4fff-8fff-ffffffffffff",
 
   // Weekly
-  "12121212-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-  "13131313-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "12121212-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "13131313-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
 ] as const;
 
 
@@ -176,5 +176,45 @@ export const TEST_PLAN_RELATIONS = [
   {
     parentPlanId: TEST_PLAN_IDS[5],
     childPlanId: TEST_PLAN_IDS[7],
+  },
+];
+
+export const INSERT_OVERALL_PLAN_ARRAY = [
+  {
+    title: "New Overall Plan",
+    description: "Test overall plan",
+    type: "overall" as const,
+    time: null,
+    status: "active" as const,
+    junctionIdArray: [TEST_REFLECTION.id, TEST_REFLECTION_IDS[0]],
+  },
+];
+
+export const INSERT_YEARLY_PLAN_ARRAY = [
+  {
+    title: "New Yearly Plan",
+    description: "Test yearly plan",
+    type: "yearly" as const,
+    time: "2028",
+    status: "active" as const,
+    junctionIdArray: [TEST_PLAN_IDS[0]],
+  },
+];
+
+export const UPDATE_PLAN_BODY = {
+  title: "Updated Plan Title",
+  description: "Updated description",
+};
+
+export const createdPlans = [
+  {
+    id: "99999999-9999-4999-8999-999999999999",
+    userId: TEST_USER.id,
+    title: "New Overall Plan",
+    description: "Test overall plan",
+    type: "overall" as const,
+    time: null,
+    status: "active" as const,
+    linkedIds: [TEST_REFLECTION.id, TEST_REFLECTION_IDS[0]],
   },
 ];
