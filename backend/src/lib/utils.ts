@@ -57,7 +57,7 @@ export function toNewHabit(item: HabitCreateItem): Omit<NewHabit, "userId"> {
     name: item.name,
     description: item.description ?? null,
     color: item.color,
-    isArchived: item.isArchived,
+    isArchived: item.isArchived
   };
 }
  

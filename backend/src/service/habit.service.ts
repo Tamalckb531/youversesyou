@@ -1,6 +1,6 @@
 import type { HabitCreateItem } from "@tamaldip/uvsu-common";
 import { HabitRepository } from "../repository/habit.repository";
-import { dedupeIds } from "../lib/utils";
+import { dedupeIds, toNewHabit } from "../lib/utils";
 import { ReflectionRepository } from "../repository/reflection.repository";
 import { responseMsg } from "../lib/constants";
 
@@ -18,6 +18,8 @@ export const HabitService = {
         const missing = allJunctionIds.filter((id) => !validIds.has(id));
         if (missing.length > 0) throw new Error(responseMsg.habit.error.INVALID_JUNCTION_IDS)
         
-        const newItem = {...item, junctionIdArray:allJunctionIds}
+        const newItem = { habit: toNewHabit(item), junctionIdArray: allJunctionIds }
+        
+        return HabitRepository.createWithJunctions(userId, newItem)
     }
 }
