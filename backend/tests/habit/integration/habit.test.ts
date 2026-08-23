@@ -4,9 +4,11 @@ import { responseMsg } from "../../../src/lib/constants";
 import { TEST_USER } from "../../../src/test-data";
 import { INSERT_HABIT } from "../../../src/data/habit-test.data";
 
+const rootRoute = "habits"
+
 describe("GET /api/v1/habits/", () => {
     it("should return all habits of the test users", async () => {
-        const res = await app.request("/api/v1/habits/", {
+        const res = await app.request(`/api/v1/${rootRoute}/`, {
             method: "GET",
         })
         expect(res.status).toBe(200);
@@ -22,7 +24,7 @@ describe("GET /api/v1/habits/", () => {
 
 describe("POST /api/v1/habits/", () => {
     it("should create habit linked to reflections", async () => {
-        const res = await app.request("/api/v1/habits/", {
+        const res = await app.request(`/api/v1/${rootRoute}/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -48,28 +50,28 @@ describe("POST /api/v1/habits/", () => {
         );
     });
 
-    // it("should return error when junction ids are invalid", async () => {
-    //     const res = await app.request("/api/v1/plans/", {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify([
-    //             {
-    //                 ...INSERT_OVERALL_PLAN_ARRAY[0],
-    //                 junctionIdArray: [
-    //                     "aaaaaaaa-1111-4111-8111-111111111111",
-    //                 ],
-    //             },
-    //         ]),
-    //     });
+    it("should return error when junction ids are invalid", async () => {
+        const res = await app.request(`/api/v1/${rootRoute}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(
+                {
+                    ...INSERT_HABIT,
+                    junctionIdArray: [
+                        "9f0817cc-0d19-42b9-9128-695d22deaf99",
+                    ],
+                },
+            ),
+        });
 
-    //     expect(res.status).toBe(400);
+        expect(res.status).toBe(500);
 
-    //     const body = await res.json();
+        const body = await res.json();
 
-    //     expect(body.success).toBe(false);
-    //     expect(body.msg).toBe(responseMsg.plan.error.INVALID_JUNCTION_IDS);
-    //     expect(body.data).toBeNull();
-    // });
+        expect(body.success).toBe(false);
+        expect(body.msg).toBe(responseMsg.habit.error.INVALID_JUNCTION_IDS);
+        expect(body.data).toBeNull();
+    });
 })
