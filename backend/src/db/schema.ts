@@ -473,6 +473,7 @@ export const dbRelations = defineRelations(
     plans,
     reflectionPlans,
     planRelations,
+    reflectionHabits,
     todos,
     aiReports,
     emergencyChatSessions,
@@ -580,6 +581,16 @@ export const dbRelations = defineRelations(
       child: r.one.plans({
         from: r.planRelations.childPlanId,
         to: r.plans.id,
+      }),
+    },
+    reflectionHabits: {
+      reflection: r.one.reflections({
+        from: r.reflectionHabits.reflectionId,
+        to: r.reflections.id,
+      }),
+      habit: r.one.habits({
+        from: r.reflectionHabits.habitId,
+        to: r.habits.id,
       }),
     },
 
