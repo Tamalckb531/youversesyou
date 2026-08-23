@@ -153,7 +153,7 @@ export const HabitDeleteController = async (c: Context) => {
             success: true,
             msg: responseMsg.habit.success.DELETED,
             data: deletedHabitId
-        }, 201);
+        }, 200);
     }
     catch (err) {
         return c.json(

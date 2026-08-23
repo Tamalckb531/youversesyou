@@ -153,3 +153,37 @@ describe(`PATCH /api/v1/${rootRoute}/:id`, () => {
         expect(body.data).toBeNull();
     });
 });
+
+describe(`DELETE /api/v1/${rootRoute}/:id`, () => {
+    it("should delete a habit", async () => {
+        const habitId = TEST_HABIT_IDS[0];
+
+        const res = await app.request(`/api/v1/${rootRoute}/${habitId}`, {
+            method: "DELETE",
+        });
+
+        expect(res.status).toBe(200);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.habit.success.DELETED);
+        expect(body.data).toBe(habitId);
+    });
+
+    it("should return error when habit id is invalid", async () => {
+        const invalidHabitId = "aaaaaaaa-1111-4111-8111-111111111111";
+
+        const res = await app.request(`/api/v1/${rootRoute}/${invalidHabitId}`, {
+            method: "DELETE",
+        });
+
+        expect(res.status).toBe(500);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(false);
+        expect(body.msg).toBe(responseMsg.habit.error.NO_HABIT_ID);
+        expect(body.data).toBeNull();
+    });
+});

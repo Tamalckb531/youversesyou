@@ -30,8 +30,9 @@ export const HabitService = {
     },
 
     async deleteHabit(userId: string, habitId: string) {
-        const deletedHabit = await HabitRepository.deleteHabit(habitId, userId);        
-        if (!deletedHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
+        const targetHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(habitId, userId);        
+        if (!targetHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
+        const deletedHabit = await HabitRepository.deleteHabit(habitId, userId);
         return deletedHabit.id;
     }
 }
