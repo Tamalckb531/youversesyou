@@ -12,6 +12,7 @@ vi.mock("../../../src/service/habit.service", () => ({
     allHabits: vi.fn(),
     createOne: vi.fn(),
     updateHabit: vi.fn(),
+    deleteHabit: vi.fn(),
   },
 }));
 
@@ -491,6 +492,123 @@ describe("HabitPatchController", () => {
         );
 
         const response = await HabitPatchController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.GENERIC_500,
+                data: null,
+            },
+            500,
+        );
+
+        expect(response.status).toBe(500);
+    });
+});
+
+describe("HabitDeleteController", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    function createMockContext(user: any, habitId:string | undefined) {
+        const json = vi.fn();
+
+        json.mockImplementation((responseBody, status = 200) => ({
+            status,
+            body: responseBody,
+        }));
+
+        const c = {
+            get: vi.fn().mockReturnValue(user),
+            req: {
+                param: vi.fn().mockReturnValue(habitId),
+            },
+            json,
+        } as unknown as Context;
+
+        return { c, json };
+    }
+
+    it("should return 400 when user id is missing", async () => {
+        const { c, json } = createMockContext(
+            {},
+            TEST_HABIT_IDS[0],
+        );
+
+        const response = await HabitDeleteController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.NO_USER_ID,
+                data: null,
+            },
+            400,
+        );
+
+        expect(response.status).toBe(400);
+
+        expect(HabitService.deleteHabit).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 when habit id is missing", async () => {
+        const { c, json } = createMockContext(
+            {id: TEST_USER.id},
+            undefined,
+        );
+
+        const response = await HabitDeleteController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.habit.error.NO_HABIT_ID,
+                data: null,
+            },
+            400,
+        );
+
+        expect(response.status).toBe(400);
+
+        expect(HabitService.deleteHabit).not.toHaveBeenCalled();
+    });
+
+    it("should return 500 when service throws an Error", async () => {
+        vi.mocked(HabitService.deleteHabit).mockRejectedValue(
+            new Error("Database failed"),
+        );
+
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_HABIT_IDS[0],
+        );
+
+        const response = await HabitDeleteController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: "Database failed",
+                data: null,
+            },
+            500,
+        );
+
+        expect(response.status).toBe(500);
+    });
+
+    it("should return generic 500 message for non-Error throws", async () => {
+        vi.mocked(HabitService.deleteHabit).mockRejectedValue(
+            "boom",
+        );
+
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_HABIT_IDS[0],
+        );
+
+        const response = await HabitDeleteController(c);
 
         expect(json).toHaveBeenCalledWith(
             {
