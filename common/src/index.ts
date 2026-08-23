@@ -1,6 +1,6 @@
 // user.ts
 
-import { z } from "zod";
+import { boolean, z } from "zod";
 
 //! Auth types and schemas 
 export const userStatusSchema = z.enum(["pending", "dormant", "disrupted","uncertain"]);
@@ -181,3 +181,39 @@ export interface PlanResponseDTO {
 }
  
 export type PlanBulkCreateResponseDTO = PlanResponseDTO[];
+
+//! Habit types and schemas 
+
+
+const habitCreateItemBaseSchema = z
+  .object({
+    name: z.string().trim().min(1, "name is required").max(200),
+    description: z.string().trim().max(2000).nullable().optional(),
+    color: z.string().trim().max(10).nullable().optional(),
+    isArchived: boolean,
+    junctionIdArray: z
+      .array(z.uuid("junctionIdArray must contain valid uuids"))
+      .min(1, "at least one parent/reflection link is required")
+      .max(5, "Can not insert more then 5 reflections for a single habit"),
+  });
+
+export const updateHabitSchema = habitCreateItemBaseSchema.omit({
+  junctionIdArray: true
+}).partial();
+
+export type HabitCreateItem = z.infer<typeof habitCreateItemBaseSchema>;
+export type updateHabitSchemaType = z.infer<typeof updateHabitSchema>;
+
+export interface HabitResponseDTO {
+  id: string;
+  userId: string;
+  name: string;
+  description: string | null;
+  color: string | null;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+  linkedIds: string[];
+}
+ 
+
