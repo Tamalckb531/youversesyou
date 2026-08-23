@@ -3,9 +3,9 @@ import { app } from "../../../src";
 import { responseMsg } from "../../../src/lib/constants";
 import { TEST_USER } from "../../../src/test-data";
 
-describe("GET /api/v1/reflections/", () => {
-    it("should return all reflections of the test users", async () => {
-        const res = await app.request("/api/v1/reflections/", {
+describe("GET /api/v1/habits/", () => {
+    it("should return all habits of the test users", async () => {
+        const res = await app.request("/api/v1/habits/", {
             method: "GET",
         })
         expect(res.status).toBe(200);
