@@ -8,7 +8,7 @@ import { TEST_USER } from "../../../src/test-data";
 
 vi.mock("../../../src/service/habit.service", () => ({
   habitService: {
-    listForUser: vi.fn(),
+    allHabits: vi.fn(),
   },
 }));
 
@@ -47,7 +47,7 @@ describe("HabitGetController", () => {
       body: { success: false, msg: responseMsg.generic.error.NO_USER_ID, data:null },
     });
 
-    expect(HabitService.listForUser).not.toHaveBeenCalled();
+    expect(HabitService.allHabits).not.toHaveBeenCalled();
   });
 
   it("should return generics when service succeeds", async () => {
@@ -57,7 +57,7 @@ describe("HabitGetController", () => {
     ];
 
     //? When the controller call the service, it pretends to be successful and return the generics
-    vi.mocked(HabitService.listForUser).mockResolvedValue(
+    vi.mocked(HabitService.allHabits).mockResolvedValue(
       habits as any
     );
 
@@ -67,8 +67,8 @@ describe("HabitGetController", () => {
 
     const response = await HabitGetController(c);
 
-    expect(HabitService.listForUser).toHaveBeenCalledTimes(1);
-    expect(HabitService.listForUser).toHaveBeenCalledWith(
+    expect(HabitService.allHabits).toHaveBeenCalledTimes(1);
+    expect(HabitService.allHabits).toHaveBeenCalledWith(
       TEST_USER.id
     );
 
@@ -89,7 +89,7 @@ describe("HabitGetController", () => {
   });
 
   it("should return 500 when service throws an error", async () => {
-    vi.mocked(HabitService.listForUser).mockRejectedValue(
+    vi.mocked(HabitService.allHabits).mockRejectedValue(
       new Error("Database failed")
     );
 
@@ -99,7 +99,7 @@ describe("HabitGetController", () => {
 
     const response = await HabitGetController(c);
 
-    expect(HabitService.listForUser).toHaveBeenCalledTimes(1);
+    expect(HabitService.allHabits).toHaveBeenCalledTimes(1);
 
     expect(json).toHaveBeenCalledWith(
       {
@@ -121,7 +121,7 @@ describe("HabitGetController", () => {
   });
 
   it("should return generic 500 message for non-Error throws", async () => {
-    vi.mocked(HabitService.listForUser).mockRejectedValue("boom");
+    vi.mocked(HabitService.allHabits).mockRejectedValue("boom");
 
     const { c, json } = createMockContext({
       id: TEST_USER.id,
