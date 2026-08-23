@@ -1,15 +1,19 @@
 import { faker } from "@faker-js/faker";
 import { getDb } from "./db";
-import { planRelations, plans, reflectionPlans, reflections, users } from "./db/schema";
+import { habits, planRelations, plans, reflectionHabits, reflectionPlans, reflections, users } from "./db/schema";
 import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "./test-data";
 import { TEST_PLAN_RELATIONS, TEST_PLANS, TEST_REFLECTION_PLANS } from "./data/plan-test-data";
+import { TEST_HABITS, TEST_REFLECTION_HABITS } from "./data/habit-test.data";
 
 
 async function seed() {
   // Clear old data
+  // Clear old data
   await getDb().delete(planRelations);
   await getDb().delete(reflectionPlans);
+  await getDb().delete(reflectionHabits);
   await getDb().delete(plans);
+  await getDb().delete(habits);
   await getDb().delete(reflections);
   await getDb().delete(users);
 
@@ -79,6 +83,12 @@ async function seed() {
   await getDb()
     .insert(planRelations)
     .values(TEST_PLAN_RELATIONS);
+  
+  await getDb().insert(habits).values(TEST_HABITS);
+
+  await getDb()
+      .insert(reflectionHabits)
+      .values(TEST_REFLECTION_HABITS);
 
   console.log("✅ Test database seeded");
 }
