@@ -75,5 +75,5 @@ export const HabitCreateController = async (c: Context) => {
     }
 }
 export const HabitPatchController = async (c: Context) => { }
+export const HabitDeleteController = async (c: Context) => { }
 export const HabitMarkController = async (c: Context) => { }
-export const HabitUnMarkController = async (c: Context) => { }
