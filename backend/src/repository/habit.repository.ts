@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../db";
 import { habits, reflectionHabits } from "../db/schema";
-import type { HabitResponseDTO } from "@tamaldip/uvsu-common";
+import type { HabitResponseDTO, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 
 export type NewHabit = typeof habits.$inferInsert;
 export type Habit = typeof habits.$inferSelect;
@@ -60,4 +60,18 @@ export const HabitRepository = {
         return habit;
     },
 
+    async updateOneHabit(rows: updateHabitSchemaType, habitId: string, userId: string) {
+        const [habit] = await getDb()
+            .update(habits)
+            .set(rows)
+            .where(
+                and(
+                    eq(habits.userId, userId),
+                    eq(habits.id, habitId)
+                )
+            )
+            .returning();
+        
+        return habit;
+    }
 }
