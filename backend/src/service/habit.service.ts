@@ -1,4 +1,4 @@
-import type { HabitCreateItem } from "@tamaldip/uvsu-common";
+import type { HabitCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { HabitRepository } from "../repository/habit.repository";
 import { dedupeIds, toNewHabit } from "../lib/utils";
 import { ReflectionRepository } from "../repository/reflection.repository";
@@ -21,5 +21,11 @@ export const HabitService = {
         const newItem = { habit: toNewHabit(item), junctionIdArray: allJunctionIds }
         
         return HabitRepository.createWithJunctions(userId, newItem)
+    },
+
+    async updateHabit(userId: string, habitId: string, item: updateHabitSchemaType) {
+        const currentHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(planId, userId);        
+        if (!currentHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
+        return HabitRepository.updateOneHabit(item, planId, userId);
     }
 }

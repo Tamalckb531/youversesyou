@@ -109,7 +109,7 @@ export const HabitPatchController = async (c: Context) => {
             );
         }
 
-        const updated = await HabitService.updatePlan(userId, id, result.data);
+        const updated = await HabitService.updateHabit(userId, id, result.data);
 
         return c.json({
             success: true,
