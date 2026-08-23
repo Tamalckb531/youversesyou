@@ -24,8 +24,6 @@ import { defineRelations, sql } from "drizzle-orm";
 export const userStatus = pgEnum("user_status", ["pending", "dormant", "disrupted","uncertain"]);
 export const entityStatusEnum = pgEnum("entity_status", ["active", "archived"]);
 export const reflectionTypeEnum = pgEnum("reflection_type", ["goal", "pain_point", "dream"]);
-export const habitTargetTypeEnum = pgEnum("habit_target_type", ["boolean", "count", "duration"]);
-export const habitLogStatusEnum = pgEnum("habit_log_status", ["done", "skipped", "missed"]);
 export const planTypeEnum = pgEnum("plan_type", ["weekly", "monthly", "yearly", "overall"]);
 export const planStatusEnum = pgEnum("plan_status", ["active", "completed", "abandoned"]);
 export const todoSourceEnum = pgEnum("todo_source", ["user", "ai"]);
@@ -188,9 +186,6 @@ export const habits = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     description: text("description"),
-    targetType: habitTargetTypeEnum("target_type").notNull().default("boolean"),
-    targetValue: numeric("target_value"), // used when count/duration
-    unit: text("unit"), // "minutes", "pages", etc.
     color: text("color"),
     isArchived: boolean("is_archived").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -202,7 +197,6 @@ export const habits = pgTable(
 );
 
 //! One row per habit per day — this table IS the heatmap source of truth.
-// Unique (habitId, date) prevents double-checkins from corrupting streaks.
 export const habitLogs = pgTable(
   "habit_logs",
   {
@@ -210,16 +204,10 @@ export const habitLogs = pgTable(
     habitId: uuid("habit_id")
       .notNull()
       .references(() => habits.id, { onDelete: "cascade" }),
-    // Denormalized on purpose: avoids a join on habits for every dashboard/
-    // heatmap/AI-context read, which is the hottest read path in the app.
-    // Kept consistent because it's set once at insert from habits.userId.
     userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     date: date("date").notNull(),
-    status: habitLogStatusEnum("status").notNull().default("done"),
-    value: numeric("value"), // for count/duration habit types
-    note: text("note"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
@@ -237,8 +225,6 @@ export const habitStreaks = pgTable("habit_streaks", {
     .references(() => habits.id, { onDelete: "cascade" }),
   currentStreak: integer("current_streak").notNull().default(0),
   longestStreak: integer("longest_streak").notNull().default(0),
-  completionRate30d: numeric("completion_rate_30d"),
-  completionRate90d: numeric("completion_rate_90d"),
   lastCalculatedDate: date("last_calculated_date"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -289,6 +275,25 @@ export const reflectionPlans = pgTable(
   (table) => [
     uniqueIndex("reflection_plans_unique").on(table.reflectionId, table.planId),
     index("reflection_plans_plan_idx").on(table.planId),
+  ],
+);
+
+// junction: reflections <-> habits (many-to-many)
+export const reflectionHabits = pgTable(
+  "reflection_habits",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    reflectionId: uuid("reflection_id")
+      .notNull()
+      .references(() => reflections.id, { onDelete: "cascade" }),
+    habitId: uuid("habit_id")
+      .notNull()
+      .references(() => habits.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("reflection_habits_unique").on(table.reflectionId, table.habitId),
+    index("reflection_habits_plan_idx").on(table.habitId),
   ],
 );
 
