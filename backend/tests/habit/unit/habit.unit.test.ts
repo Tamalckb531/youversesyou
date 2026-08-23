@@ -7,7 +7,7 @@ import { HabitService } from "../../../src/service/habit.service";
 import { TEST_USER } from "../../../src/test-data";
 
 vi.mock("../../../src/service/habit.service", () => ({
-  habitService: {
+  HabitService: {
     allHabits: vi.fn(),
   },
 }));
