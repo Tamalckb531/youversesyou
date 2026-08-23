@@ -1,4 +1,4 @@
-import type { HabitCreateItem } from "@tamaldip/uvsu-common";
+import type { HabitCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "../test-data";
 import type { Habit } from "../repository/habit.repository";
 
@@ -263,6 +263,7 @@ export const INSERT_HABIT:HabitCreateItem = {
     isArchived: false,
     junctionIdArray:[TEST_REFLECTION.id, TEST_REFLECTION_IDS[0]]
 }
+
 export const createdHabit = {
     id: TEST_HABIT_IDS[0],
     userId: TEST_USER.id,
@@ -275,3 +276,8 @@ export const createdHabit = {
         TEST_REFLECTION_IDS[0],
     ],
 }
+
+export const UPDATE_HABIT_BODY:updateHabitSchemaType = {
+    name: "Updated Plan Title",
+    isArchived: true,
+};

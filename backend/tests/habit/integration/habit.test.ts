@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 import { app } from "../../../src";
 import { responseMsg } from "../../../src/lib/constants";
 import { TEST_USER } from "../../../src/test-data";
-import { INSERT_HABIT } from "../../../src/data/habit-test.data";
+import { INSERT_HABIT, TEST_HABIT_IDS, UPDATE_HABIT_BODY } from "../../../src/data/habit-test.data";
+import { getDb } from "../../../src/db";
+import { habits } from "../../../src/db/schema";
+import { eq } from "drizzle-orm";
 
 const rootRoute = "habits"
 
-describe("GET /api/v1/habits/", () => {
+describe(`GET /api/v1/${rootRoute}/`, () => {
     it("should return all habits of the test users", async () => {
         const res = await app.request(`/api/v1/${rootRoute}/`, {
             method: "GET",
@@ -22,7 +25,7 @@ describe("GET /api/v1/habits/", () => {
     });
 });
 
-describe("POST /api/v1/habits/", () => {
+describe(`POST /api/v1/${rootRoute}/`, () => {
     it("should create habit linked to reflections", async () => {
         const res = await app.request(`/api/v1/${rootRoute}/`, {
             method: "POST",
@@ -74,4 +77,79 @@ describe("POST /api/v1/habits/", () => {
         expect(body.msg).toBe(responseMsg.habit.error.INVALID_JUNCTION_IDS);
         expect(body.data).toBeNull();
     });
-})
+});
+
+describe(`PATCH /api/v1/${rootRoute}/:id`, () => {
+    it("should update a habit name and isArchived", async () => {
+        const habitId = TEST_HABIT_IDS[0];
+
+        const res = await app.request(`/api/v1/${rootRoute}/${habitId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(UPDATE_HABIT_BODY),
+        });
+
+        expect(res.status).toBe(201);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.habit.success.UPDATE_ONE);
+        expect(body.data.name).toBe(UPDATE_HABIT_BODY.name);
+        expect(body.data.isArchived).toBe(UPDATE_HABIT_BODY.isArchived);
+
+        const [updatedPlan] = await getDb()
+            .select({
+                id: habits.id,
+                name: habits.name,
+                isArchived: habits.isArchived,
+                userId: habits.userId,
+            })
+            .from(habits)
+            .where(eq(habits.id, habitId));
+
+        expect(updatedPlan.id).toBe(habitId);
+        expect(updatedPlan.name).toBe(UPDATE_HABIT_BODY.name);
+        expect(updatedPlan.isArchived).toBe(UPDATE_HABIT_BODY.isArchived);
+        expect(updatedPlan.userId).toBe(TEST_USER.id);
+    });
+
+    it("should return error when habit id is invalid", async () => {
+        const invalidHabitId = "aaaaaaaa-1111-4111-8111-111111111111";
+
+        const res = await app.request(`/api/v1/${rootRoute}/${invalidHabitId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(UPDATE_HABIT_BODY),
+        });
+
+        expect(res.status).toBe(500);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(false);
+        expect(body.msg).toBe(responseMsg.habit.error.NO_HABIT_ID);
+        expect(body.data).toBeNull();
+    });
+
+    it("should return error when request body is invalid", async () => {
+        const res = await app.request(`/api/v1/${rootRoute}/${TEST_HABIT_IDS[0]}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: "", isArchived:"yes" }),
+        });
+
+        expect(res.status).toBe(400);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(false);
+        expect(body.data).toBeNull();
+    });
+});
