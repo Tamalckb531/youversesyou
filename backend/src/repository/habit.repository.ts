@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { getDb } from "../db";
-import { habits } from "../db/schema";
+import { habits, reflectionHabits } from "../db/schema";
+import type { HabitResponseDTO } from "@tamaldip/uvsu-common";
 
 export type NewHabit = typeof habits.$inferInsert;
 export type Habit = typeof habits.$inferSelect;
@@ -12,4 +13,36 @@ export const HabitRepository = {
             .from(habits)
             .where(eq(habits.userId, userId));
     },
+
+    async createWithJunctions(
+        userId: string,
+        item: {
+            habit: Omit<NewHabit, "userId">;
+            junctionIdArray: string[];
+        }
+    ): Promise<Habit & { linkedIds: string[] }> {
+        const db = getDb();
+        
+        return await db.transaction(async (tx) => {
+            let result: Habit & { linkedIds: string[] };
+        
+            const [inserted] = await tx
+                .insert(habits)
+                .values({ ...item.habit, userId })
+                .returning();
+    
+            if (item.junctionIdArray.length > 0) {
+                await tx.insert(reflectionHabits).values(
+                    item.junctionIdArray.map((reflectionId) => ({
+                        reflectionId,
+                        habitId: inserted.id,
+                    })),
+                );
+            }
+    
+            result = { ...inserted, linkedIds: item.junctionIdArray };
+        
+            return result;
+        });
+    }
 }
