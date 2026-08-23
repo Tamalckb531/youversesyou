@@ -1,4 +1,4 @@
-import { boolean, z } from "zod";
+import { z } from "zod";
 export declare const userStatusSchema: z.ZodEnum<{
     disrupted: "disrupted";
     dormant: "dormant";
@@ -186,14 +186,14 @@ export declare const habitCreateItemBaseSchema: z.ZodObject<{
     name: z.ZodString;
     description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     color: z.ZodOptional<z.ZodNullable<z.ZodString>>;
-    isArchived: typeof boolean;
+    isArchived: z.ZodOptional<z.ZodBoolean>;
     junctionIdArray: z.ZodArray<z.ZodUUID>;
 }, z.core.$strip>;
 export declare const updateHabitSchema: z.ZodObject<{
     name: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
     color: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
-    isArchived: z.ZodOptional<typeof boolean>;
+    isArchived: z.ZodOptional<z.ZodOptional<z.ZodBoolean>>;
 }, z.core.$strip>;
 export type HabitCreateItem = z.infer<typeof habitCreateItemBaseSchema>;
 export type updateHabitSchemaType = z.infer<typeof updateHabitSchema>;
@@ -203,7 +203,7 @@ export interface HabitResponseDTO {
     name: string;
     description: string | null;
     color: string | null;
-    isArchived: boolean;
+    isArchived: boolean | undefined;
     createdAt: string;
     updatedAt: string;
     linkedIds: string[];

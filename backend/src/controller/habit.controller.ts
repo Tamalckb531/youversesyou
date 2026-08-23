@@ -57,7 +57,7 @@ export const HabitCreateController = async (c: Context) => {
             );
         }
 
-        const created = await HabitService.bulkCreate(userId, result.data);
+        const created = await HabitService.createOne(userId, result.data);
         return c.json({
             success: true,
             msg:responseMsg.habit.success.CREATED_BULK,

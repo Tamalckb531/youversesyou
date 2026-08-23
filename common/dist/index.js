@@ -1,5 +1,5 @@
 // user.ts
-import { boolean, z } from "zod";
+import { z } from "zod";
 //! Auth types and schemas 
 export const userStatusSchema = z.enum(["pending", "dormant", "disrupted", "uncertain"]);
 export const meResponseSchema = z.object({
@@ -130,7 +130,7 @@ export const habitCreateItemBaseSchema = z
     name: z.string().trim().min(1, "name is required").max(200),
     description: z.string().trim().max(2000).nullable().optional(),
     color: z.string().trim().max(10).nullable().optional(),
-    isArchived: boolean,
+    isArchived: z.boolean().optional(),
     junctionIdArray: z
         .array(z.uuid("junctionIdArray must contain valid uuids"))
         .min(1, "at least one parent/reflection link is required")

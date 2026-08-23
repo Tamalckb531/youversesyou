@@ -188,7 +188,7 @@ export const habitCreateItemBaseSchema = z
     name: z.string().trim().min(1, "name is required").max(200),
     description: z.string().trim().max(2000).nullable().optional(),
     color: z.string().trim().max(10).nullable().optional(),
-    isArchived: boolean,
+    isArchived: z.boolean().optional(),
     junctionIdArray: z
       .array(z.uuid("junctionIdArray must contain valid uuids"))
       .min(1, "at least one parent/reflection link is required")
@@ -208,7 +208,7 @@ export interface HabitResponseDTO {
   name: string;
   description: string | null;
   color: string | null;
-  isArchived: boolean;
+  isArchived: boolean | undefined;
   createdAt: string;
   updatedAt: string;
   linkedIds: string[];

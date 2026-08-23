@@ -1,6 +1,7 @@
-import type { createReflectionType, updateReflectionSchemaType, PlanCreateItem } from "@tamaldip/uvsu-common";
+import type { createReflectionType, updateReflectionSchemaType, PlanCreateItem, HabitCreateItem } from "@tamaldip/uvsu-common";
 import type { NewReflection, PartialReflection } from "../repository/reflection.repository";
 import type { NewPlan } from "../repository/plan.repository";
+import type { NewHabit } from "../repository/habit.repository";
 
 export const toInsertRow = (input:createReflectionType, userId:string):NewReflection => {
     return {
@@ -49,6 +50,14 @@ export function toNewPlan(item: PlanCreateItem): Omit<NewPlan, "userId"> {
     type: item.type,
     time: item.time,
     status: "active",
+  };
+}
+export function toNewHabit(item: HabitCreateItem): Omit<NewHabit, "userId"> {
+  return {
+    name: item.name,
+    description: item.description ?? null,
+    color: item.color,
+    isArchived: item.isArchived,
   };
 }
  
