@@ -73,5 +73,19 @@ export const HabitRepository = {
             .returning();
         
         return habit;
-    }
+    },
+
+    async deleteHabit(habitId: string, userId: string) {
+        const [habit] = await getDb()
+            .delete(habits)
+            .where(
+                and(
+                    eq(habits.id, habitId),
+                    eq(habits.userId, userId),
+                ),
+            )
+            .returning();
+
+        return habit;
+    },
 }
