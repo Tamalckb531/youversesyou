@@ -2,15 +2,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Context } from "hono";
 
 import { responseMsg } from "../../../src/lib/constants";
-import { HabitCreateController, HabitGetController } from "../../../src/controller/habit.controller";
+import { HabitCreateController, HabitGetController, HabitPatchController, HabitDeleteController } from "../../../src/controller/habit.controller";
 import { HabitService } from "../../../src/service/habit.service";
 import { TEST_REFLECTION_IDS, TEST_USER } from "../../../src/test-data";
-import { createdHabit, INSERT_HABIT } from "../../../src/data/habit-test.data";
+import { createdHabit, INSERT_HABIT, TEST_HABIT_IDS, UPDATE_HABIT_BODY } from "../../../src/data/habit-test.data";
 
 vi.mock("../../../src/service/habit.service", () => ({
   HabitService: {
     allHabits: vi.fn(),
     createOne: vi.fn(),
+    updateHabit: vi.fn(),
   },
 }));
 
@@ -379,5 +380,127 @@ describe("HabitCreateController", () => {
             TEST_USER.id,
             body,
         );
+    });
+});
+
+describe("HabitPatchController", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    function createMockContext(user: any, habitId:string | undefined, body: unknown) {
+        const json = vi.fn();
+
+        json.mockImplementation((responseBody, status = 200) => ({
+            status,
+            body: responseBody,
+        }));
+
+        const c = {
+            get: vi.fn().mockReturnValue(user),
+            req: {
+                param: vi.fn().mockReturnValue(habitId),
+                json: vi.fn().mockResolvedValue(body),
+            },
+            json,
+        } as unknown as Context;
+
+        return { c, json };
+    }
+
+    it("should return 400 when user id is missing", async () => {
+        const { c, json } = createMockContext(
+            {},
+            TEST_HABIT_IDS[0],
+            UPDATE_HABIT_BODY,
+        );
+
+        const response = await HabitPatchController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.NO_USER_ID,
+                data: null,
+            },
+            400,
+        );
+
+        expect(response.status).toBe(400);
+
+        expect(HabitService.updateHabit).not.toHaveBeenCalled();
+    });
+
+    it("should return 400 when habit id is missing", async () => {
+        const { c, json } = createMockContext(
+            {id: TEST_USER.id},
+            undefined,
+            UPDATE_HABIT_BODY,
+        );
+
+        const response = await HabitPatchController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.habit.error.NO_HABIT_ID,
+                data: null,
+            },
+            400,
+        );
+
+        expect(response.status).toBe(400);
+
+        expect(HabitService.updateHabit).not.toHaveBeenCalled();
+    });
+
+    it("should return 500 when service throws an Error", async () => {
+        vi.mocked(HabitService.updateHabit).mockRejectedValue(
+            new Error("Database failed"),
+        );
+
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_HABIT_IDS[0],
+            UPDATE_HABIT_BODY,
+        );
+
+        const response = await HabitPatchController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: "Database failed",
+                data: null,
+            },
+            500,
+        );
+
+        expect(response.status).toBe(500);
+    });
+
+    it("should return generic 500 message for non-Error throws", async () => {
+        vi.mocked(HabitService.updateHabit).mockRejectedValue(
+            "boom",
+        );
+
+        const { c, json } = createMockContext(
+            { id: TEST_USER.id },
+            TEST_HABIT_IDS[0],
+            UPDATE_HABIT_BODY,
+        );
+
+        const response = await HabitPatchController(c);
+
+        expect(json).toHaveBeenCalledWith(
+            {
+                success: false,
+                msg: responseMsg.generic.error.GENERIC_500,
+                data: null,
+            },
+            500,
+        );
+
+        expect(response.status).toBe(500);
     });
 });
