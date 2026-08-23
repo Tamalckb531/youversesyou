@@ -1,5 +1,6 @@
 import type { HabitCreateItem } from "@tamaldip/uvsu-common";
 import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "../test-data";
+import type { Habit } from "../repository/habit.repository";
 
 export const TEST_HABIT_IDS = [
     "aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa",
@@ -261,4 +262,16 @@ export const INSERT_HABIT:HabitCreateItem = {
     color: "#FF5733",
     isArchived: false,
     junctionIdArray:[TEST_REFLECTION.id, TEST_REFLECTION_IDS[0]]
+}
+export const createdHabit = {
+    id: TEST_HABIT_IDS[0],
+    userId: TEST_USER.id,
+    name: "Morning Exercise",
+    description: "Exercise for 30 minutes every morning",
+    color: "#FF5733",
+    isArchived: false,
+    linkedIds: [
+        TEST_REFLECTION.id,
+        TEST_REFLECTION_IDS[0],
+    ],
 }
