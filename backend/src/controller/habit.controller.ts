@@ -13,7 +13,7 @@ export const HabitGetController = async (c: Context) => {
             data: null
         }, 400);
 
-        const items = await HabitService.listForUser(userId)
+        const items = await HabitService.allHabits(userId)
         
         return c.json({
             success: true,
