@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { responseMsg } from "../lib/constants";
 import { HabitService } from "../service/habit.service";
-import { habitCreateItemBaseSchema } from "@tamaldip/uvsu-common";
+import { habitCreateItemBaseSchema, updateHabitSchema } from "@tamaldip/uvsu-common";
 
 export const HabitGetController = async (c: Context) => { 
     try {
@@ -30,6 +30,7 @@ export const HabitGetController = async (c: Context) => {
         }, 500); 
     }
 }
+
 export const HabitGetOneController = async (c: Context) => { }
 export const HabitCreateController = async (c: Context) => { 
     try {
@@ -74,6 +75,59 @@ export const HabitCreateController = async (c: Context) => {
         );
     }
 }
-export const HabitPatchController = async (c: Context) => { }
+
+export const HabitPatchController = async (c: Context) => {
+    try {
+        const id = c.req.param("id");
+
+        const user = c.get("user");
+        const userId = user.id;
+
+        if (!id) return c.json({
+            success: false,
+            msg: responseMsg.habit.error.NO_HABIT_ID,
+            data: null
+        }, 400);
+        if (!userId) return c.json({
+            success: false,
+            msg: responseMsg.generic.error.NO_USER_ID,
+            data: null
+        }, 400);
+
+        const body: unknown = await c.req.json();
+
+        const result = updateHabitSchema.safeParse(body);
+        if (!result.success) {
+            const issue = result.error.issues[0];
+            return c.json(
+                {
+                    success: false,
+                    msg: `${issue.message} on field: ${issue.path.join(".")}`,
+                    data: null
+                },
+                400,
+            );
+        }
+
+        const updated = await HabitService.updatePlan(userId, id, result.data);
+
+        return c.json({
+            success: true,
+            msg: responseMsg.habit.success.UPDATE_ONE,
+            data: updated
+        }, 201);
+    }
+    catch (err) {
+        return c.json(
+            {
+                success: false,
+                msg: err instanceof Error ? err.message : responseMsg.generic.error.GENERIC_500, 
+                data: null
+            },
+            500,
+        );
+    }
+}
+
 export const HabitDeleteController = async (c: Context) => { }
 export const HabitMarkController = async (c: Context) => { }
