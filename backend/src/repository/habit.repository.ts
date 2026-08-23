@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getDb } from "../db";
 import { habits, reflectionHabits } from "../db/schema";
 import type { HabitResponseDTO } from "@tamaldip/uvsu-common";
@@ -44,5 +44,20 @@ export const HabitRepository = {
         
             return result;
         });
-    }
+    },
+
+    async findOneHabitByUserIdWithoutCon(habitId: string, userId: string) {
+        const [habit] = await getDb()
+            .select()
+            .from(habits)
+            .where(
+                and(
+                    eq(habits.id, habitId),
+                    eq(habits.userId, userId),
+                ),
+            );
+
+        return habit;
+    },
+
 }

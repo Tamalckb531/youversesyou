@@ -24,8 +24,8 @@ export const HabitService = {
     },
 
     async updateHabit(userId: string, habitId: string, item: updateHabitSchemaType) {
-        const currentHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(planId, userId);        
+        const currentHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(habitId, userId);        
         if (!currentHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
-        return HabitRepository.updateOneHabit(item, planId, userId);
+        return HabitRepository.updateOneHabit(item, habitId, userId);
     }
 }
