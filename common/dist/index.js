@@ -125,7 +125,7 @@ export const updatePlanSchema = planCreateItemBaseSchema.omit({
     junctionIdArray: true
 }).partial();
 //! Habit types and schemas 
-const habitCreateItemBaseSchema = z
+export const habitCreateItemBaseSchema = z
     .object({
     name: z.string().trim().min(1, "name is required").max(200),
     description: z.string().trim().max(2000).nullable().optional(),

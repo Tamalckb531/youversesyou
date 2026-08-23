@@ -182,7 +182,7 @@ export interface PlanResponseDTO {
     linkedIds: string[];
 }
 export type PlanBulkCreateResponseDTO = PlanResponseDTO[];
-declare const habitCreateItemBaseSchema: z.ZodObject<{
+export declare const habitCreateItemBaseSchema: z.ZodObject<{
     name: z.ZodString;
     description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     color: z.ZodOptional<z.ZodNullable<z.ZodString>>;
@@ -208,4 +208,3 @@ export interface HabitResponseDTO {
     updatedAt: string;
     linkedIds: string[];
 }
-export {};
