@@ -9,6 +9,14 @@ export const HabitService = {
         return HabitRepository.findAllHabitsByUserId(userId);  
     },
 
+    async oneHabit(userId: string, habitId: string) {
+        const targetHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(habitId, userId);        
+        if (!targetHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
+        const habit = await HabitRepository.oneHabit(habitId, userId);
+        return habit.id;
+    },
+
+
     async createOne(userId: string, item: HabitCreateItem) {
         const allJunctionIds = dedupeIds(item.junctionIdArray);
 
