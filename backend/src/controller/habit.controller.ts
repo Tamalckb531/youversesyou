@@ -169,9 +169,15 @@ export const HabitDeleteController = async (c: Context) => {
 
 export const HabitMarkController = async (c: Context) => { 
     try {
+        const id = c.req.param("id");
         const user = c.get("user");
         const userId = user.id;
 
+        if (!id) return c.json({
+            success: false,
+            msg: responseMsg.habit.error.NO_HABIT_ID,
+            data: null
+        }, 400);
         if (!userId) return c.json({
             success: false,
             msg: responseMsg.generic.error.NO_USER_ID,
@@ -193,7 +199,7 @@ export const HabitMarkController = async (c: Context) => {
             );
         }
 
-        const created = await HabitService.createLog(userId, result.data);
+        const created = await HabitService.createLog(userId, id, result.data);
         return c.json({
             success: true,
             msg:created.marked ? responseMsg.habit.success.MARKED : responseMsg.habit.success.UNMARKED,

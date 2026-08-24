@@ -1,4 +1,4 @@
-import type { HabitCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
+import type { HabitCreateItem, HabitLogCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { HabitRepository } from "../repository/habit.repository";
 import { dedupeIds, toNewHabit } from "../lib/utils";
 import { ReflectionRepository } from "../repository/reflection.repository";
@@ -34,5 +34,12 @@ export const HabitService = {
         if (!targetHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
         const deletedHabit = await HabitRepository.deleteHabit(habitId, userId);
         return deletedHabit.id;
+    },
+
+    async createLog(userId: string, habitId: string, habitLog:HabitLogCreateItem) {
+        const targetHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(habitId, userId);        
+        if (!targetHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
+        const log = await HabitRepository.logAndIncreaseStreak(habitId, userId, habitLog);
+        return log;
     }
 }
