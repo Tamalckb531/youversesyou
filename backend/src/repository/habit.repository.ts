@@ -3,6 +3,7 @@ import { getDb } from "../db";
 import { habitLogs, habits, habitStreaks, reflectionHabits } from "../db/schema";
 import type { HabitLogCreateItem, HabitResponseDTO, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { responseMsg } from "../lib/constants";
+import { calculateStreaks } from "../lib/utils";
 
 export type NewHabit = typeof habits.$inferInsert;
 export type Habit = typeof habits.$inferSelect;
@@ -96,7 +97,6 @@ export const HabitRepository = {
         habitLog: HabitLogCreateItem,
     ) {
         return await getDb().transaction(async (tx) => {
-            // Ownership check folded in here — no separate query needed.
             const [targetHabit] = await tx
                 .select({ id: habits.id })
                 .from(habits)
@@ -110,15 +110,18 @@ export const HabitRepository = {
                 .where(and(eq(habitLogs.habitId, habitId), eq(habitLogs.date, habitLog.date)));
 
             let log;
+            let isMarked: boolean;
 
             if (existingLog) {
                 // Toggle OFF
+                isMarked = false;
                 [log] = await tx
                     .delete(habitLogs)
                     .where(eq(habitLogs.id, existingLog.id))
                     .returning();
             } else {
                 // Toggle ON
+                isMarked = true;
                 [log] = await tx
                     .insert(habitLogs)
                     .values({
@@ -161,7 +164,7 @@ export const HabitRepository = {
                     },
                 });
 
-            return log; // undefined on delete (nothing was "created") — see note below
+            return {id:log.id,  marked:isMarked};
         });
     },
 }
