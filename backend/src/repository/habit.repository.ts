@@ -1,6 +1,6 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, gte } from "drizzle-orm";
 import { getDb } from "../db";
-import { habitLogs, habits, habitStreaks, reflectionHabits } from "../db/schema";
+import { habitLogs, habits, habitStreaks, reflectionHabits, reflections } from "../db/schema";
 import type { HabitLogCreateItem, HabitResponseDTO, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { responseMsg } from "../lib/constants";
 import { calculateStreaks } from "../lib/utils";
@@ -14,6 +14,58 @@ export const HabitRepository = {
             .select()
             .from(habits)
             .where(eq(habits.userId, userId));
+    },
+
+    async oneHabit(habitId: string, userId: string) {
+        const [habit] = await getDb()
+            .select()
+            .from(habits)
+            .where(and(eq(habits.id, habitId), eq(habits.userId, userId)));
+
+        if (!habit) return null;
+
+        const oneYearAgo = new Date();
+        oneYearAgo.setDate(oneYearAgo.getDate() - 365);
+        const oneYearAgoStr = oneYearAgo.toISOString().slice(0, 10);
+
+        const [logs, [streak], reflectionRows] = await Promise.all([
+            getDb()
+                .select({ id:habitLogs.id, date: habitLogs.date })
+                .from(habitLogs)
+                .where(
+                    and(
+                        eq(habitLogs.habitId, habitId),
+                        gte(habitLogs.date, oneYearAgoStr),
+                    ),
+                )
+                .orderBy(desc(habitLogs.date)),
+
+            getDb()
+                .select()
+                .from(habitStreaks)
+                .where(eq(habitStreaks.habitId, habitId)),
+
+            getDb()
+                .select({
+                    id: reflections.id,
+                    type: reflections.type,
+                    title: reflections.title,
+                    description: reflections.description,
+                    targetDate: reflections.targetDate,
+                    status: reflections.status,
+                })
+                .from(reflectionHabits)
+                .innerJoin(reflections, eq(reflectionHabits.reflectionId, reflections.id))
+                .where(eq(reflectionHabits.habitId, habitId)),
+        ]);
+
+        return {
+            ...habit,
+            logs,
+            currentStreak: streak?.currentStreak ?? 0,
+            longestStreak: streak?.longestStreak ?? 0,
+            reflections: reflectionRows,
+        };
     },
 
     async createWithJunctions(
