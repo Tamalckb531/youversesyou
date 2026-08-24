@@ -48,6 +48,22 @@ export const responseMsg = {
             DUPLICATE_JUNCTION_IDS_IGNORED: "Duplicate ids in junctionIdArray were ignored",
         },
     },
+    todo: {
+        success: {
+            GET_ALL: "Todos loaded",
+            GET_ONE :"Single todo loaded",
+            CREATED_BULK: "Todos created successfully",
+            UPDATE_ONE :"Todo updated successfully",
+            MARKED :"Todo marked successfully",
+            UNMARKED :"Todo unmarked successfully",
+            DELETED :"Todo deleted successfully",
+        },
+        error: {
+            INVALID_BODY: "Invalid request body",
+            NO_TODO_ID: "No todo detected",
+            INVALID_LINK_ID: "linked id do not exist or do not belong to you",
+        },
+    },
     generic: {
         error: {
             NO_USER_ID: "No user id detected",
