@@ -108,6 +108,56 @@ export const TodoCreateController = async (c: Context) => {
 }
 
 export const TodoPatchController = async (c: Context) => {
+    try {
+        const id = c.req.param("id");
+
+        const user = c.get("user");
+        const userId = user.id;
+
+        if (!id) return c.json({
+            success: false,
+            msg: responseMsg.todo.error.NO_TODO_ID,
+            data: null
+        }, 400);
+        if (!userId) return c.json({
+            success: false,
+            msg: responseMsg.generic.error.NO_USER_ID,
+            data: null
+        }, 400);
+
+        const body: unknown = await c.req.json();
+
+        const result = updateTodoSchema.safeParse(body);
+        if (!result.success) {
+            const issue = result.error.issues[0];
+            return c.json(
+                {
+                    success: false,
+                    msg: `${issue.message} on field: ${issue.path.join(".")}`,
+                    data: null
+                },
+                400,
+            );
+        }
+
+        const updated = await TodoService.updateTodo(userId, id, result.data);
+
+        return c.json({
+            success: true,
+            msg: responseMsg.todo.success.UPDATE_ONE,
+            data: updated
+        }, 201);
+    }
+    catch (err) {
+        return c.json(
+            {
+                success: false,
+                msg: err instanceof Error ? err.message : responseMsg.generic.error.GENERIC_500, 
+                data: null
+            },
+            500,
+        );
+    }
 }
 
 export const TodoDeleteController = async (c: Context) => { 
