@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { getDb } from "./db";
-import { habitLogs, habits, planRelations, plans, reflectionHabits, reflectionPlans, reflections, users } from "./db/schema";
+import { habitLogs, habits, habitStreaks, planRelations, plans, reflectionHabits, reflectionPlans, reflections, users } from "./db/schema";
 import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "./test-data";
 import { TEST_PLAN_RELATIONS, TEST_PLANS, TEST_REFLECTION_PLANS } from "./data/plan-test-data";
 import { HABIT_LOGS, TEST_HABITS, TEST_REFLECTION_HABITS } from "./data/habit-test.data";
@@ -14,6 +14,8 @@ async function seed() {
   await getDb().delete(reflectionHabits);
   await getDb().delete(plans);
   await getDb().delete(habits);
+  await getDb().delete(habitLogs);
+  await getDb().delete(habitStreaks);
   await getDb().delete(reflections);
   await getDb().delete(users);
 
