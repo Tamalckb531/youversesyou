@@ -213,5 +213,10 @@ export interface HabitResponseDTO {
   updatedAt: string;
   linkedIds: string[];
 }
- 
 
+export const habitLogCreateSchema = z
+  .object({
+    date: z.string().trim().min(1, "date is required"),
+  });
+ 
+export type HabitLogCreateItem = z.infer<typeof habitLogCreateSchema>;
