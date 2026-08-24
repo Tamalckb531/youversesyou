@@ -1,9 +1,9 @@
 import { faker } from "@faker-js/faker";
 import { getDb } from "./db";
-import { habits, planRelations, plans, reflectionHabits, reflectionPlans, reflections, users } from "./db/schema";
+import { habitLogs, habits, planRelations, plans, reflectionHabits, reflectionPlans, reflections, users } from "./db/schema";
 import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "./test-data";
 import { TEST_PLAN_RELATIONS, TEST_PLANS, TEST_REFLECTION_PLANS } from "./data/plan-test-data";
-import { TEST_HABITS, TEST_REFLECTION_HABITS } from "./data/habit-test.data";
+import { HABIT_LOGS, TEST_HABITS, TEST_REFLECTION_HABITS } from "./data/habit-test.data";
 
 
 async function seed() {
@@ -89,6 +89,9 @@ async function seed() {
   await getDb()
       .insert(reflectionHabits)
       .values(TEST_REFLECTION_HABITS);
+  
+  await getDb().insert(habitLogs).values(HABIT_LOGS);
+  
 
   console.log("✅ Test database seeded");
 }

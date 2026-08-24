@@ -1,6 +1,5 @@
 import type { HabitCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { TEST_REFLECTION, TEST_REFLECTION_IDS, TEST_USER } from "../test-data";
-import type { Habit } from "../repository/habit.repository";
 
 export const TEST_HABIT_IDS = [
     "aaaaaaaa-1111-4111-8111-aaaaaaaaaaaa",
@@ -15,6 +14,18 @@ export const TEST_HABIT_IDS = [
     "15151515-0000-4000-8000-151515151515",
 ] as const;
 
+export const TEST_HABIT_LOGS_ID = [
+    "aaaa1111-0001-4001-8001-aaaaaaaaaaaa",
+    "aaaa2222-0002-4002-8002-aaaaaaaaaaaa",
+    "aaaa3333-0003-4003-8003-aaaaaaaaaaaa",
+    "aaaa4444-0004-4004-8004-aaaaaaaaaaaa",
+    "aaaa5555-0005-4005-8005-aaaaaaaaaaaa",
+    "aaaa6666-0006-4006-8006-aaaaaaaaaaaa",
+    "aaaa7777-0007-4007-8007-aaaaaaaaaaaa",
+    "aaaa8888-0008-4008-8008-aaaaaaaaaaaa",
+    "aaaa9999-0009-4009-8009-aaaaaaaaaaaa",
+    "bbbb1111-0010-4010-8010-bbbbbbbbbbbb",
+] as const;
 
 export const TEST_HABITS = [
     {
@@ -285,3 +296,66 @@ export const UPDATE_HABIT_BODY:updateHabitSchemaType = {
 export const TEST_HABIT_LOG = {
   date: "2026-08-24",
 }
+
+export const HABIT_LOGS = [
+    {
+        id: TEST_HABIT_LOGS_ID[1],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-23"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[2],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-22"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[3],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-21"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[4],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-20"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[5],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-19"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[6],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-18"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[7],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-17"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[8],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-16"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[9],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-14"
+    },
+    {
+        id: TEST_HABIT_LOGS_ID[0],
+        habitId: TEST_HABIT_IDS[1],
+        userId: TEST_USER.id,
+        date: "2026-08-13"
+    },
+]
