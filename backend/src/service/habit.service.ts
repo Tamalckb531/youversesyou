@@ -36,9 +36,7 @@ export const HabitService = {
         return deletedHabit.id;
     },
 
-    async createLog(userId: string, habitId: string, habitLog:HabitLogCreateItem) {
-        const targetHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(habitId, userId);        
-        if (!targetHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
+    async createLog(userId: string, habitId: string, habitLog: HabitLogCreateItem) {
         const log = await HabitRepository.logAndIncreaseStreak(habitId, userId, habitLog);
         return log;
     }
