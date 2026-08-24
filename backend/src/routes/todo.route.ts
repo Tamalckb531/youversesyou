@@ -1,11 +1,11 @@
-import { HabitCreateController, HabitDeleteController, HabitGetController, HabitGetOneController, HabitMarkController, HabitPatchController } from "../controller/habit.controller";
+import { TodoCreateController, TodoDeleteController, TodoGetController, TodoGetOneController, TodoMarkController, TodoPatchController } from "../controller/todo.controller";
 import { createAuthenticatedRoute } from "./createAuthenticationRoute";
 
 export const todoRoute = createAuthenticatedRoute();
 
-todoRoute.post("/", HabitCreateController);
-todoRoute.get("/", HabitGetController);
-todoRoute.patch("/:id", HabitPatchController);
-todoRoute.delete("/:id", HabitDeleteController);
-todoRoute.get("/:id", HabitGetOneController);
-todoRoute.put("/:id/mark", HabitMarkController);
+todoRoute.post("/", TodoCreateController);
+todoRoute.get("/", TodoGetController);
+todoRoute.patch("/:id", TodoPatchController);
+todoRoute.delete("/:id", TodoDeleteController);
+todoRoute.get("/:id", TodoGetOneController);
+todoRoute.put("/:id/mark", TodoMarkController);
