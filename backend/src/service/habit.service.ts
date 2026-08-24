@@ -10,12 +10,10 @@ export const HabitService = {
     },
 
     async oneHabit(userId: string, habitId: string) {
-        const targetHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(habitId, userId);        
-        if (!targetHabit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
         const habit = await HabitRepository.oneHabit(habitId, userId);
-        return habit.id;
+        if (!habit) throw new Error(responseMsg.habit.error.NO_HABIT_ID);
+        return habit;
     },
-
 
     async createOne(userId: string, item: HabitCreateItem) {
         const allJunctionIds = dedupeIds(item.junctionIdArray);
