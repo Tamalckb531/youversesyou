@@ -31,7 +31,40 @@ export const HabitGetController = async (c: Context) => {
     }
 }
 
-export const HabitGetOneController = async (c: Context) => { }
+export const HabitGetOneController = async (c: Context) => { 
+    try {
+        const id = c.req.param("id");
+        const user = c.get("user");
+        const userId = user.id;
+
+        if (!id) return c.json({
+            success: false,
+            msg: responseMsg.habit.error.NO_HABIT_ID,
+            data: null
+        }, 400);
+        if (!userId) return c.json({
+            success: false,
+            msg: responseMsg.generic.error.NO_USER_ID,
+            data: null
+        }, 400);
+
+        const item = await HabitService.oneHabit(userId, id);
+        
+        return c.json({
+            success: true,
+            msg:responseMsg.habit.success.GET_ONE,
+            data: item,
+        })
+    }
+    catch (err) {
+        return c.json({
+            success: false,
+            msg: err instanceof Error ? err.message : responseMsg.generic.error.GENERIC_500,
+            data:null
+        }, 500); 
+    }
+}
+
 export const HabitCreateController = async (c: Context) => { 
     try {
         const user = c.get("user");
