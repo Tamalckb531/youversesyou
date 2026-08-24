@@ -208,3 +208,7 @@ export interface HabitResponseDTO {
     updatedAt: string;
     linkedIds: string[];
 }
+export declare const habitLogCreateSchema: z.ZodObject<{
+    date: z.ZodString;
+}, z.core.$strip>;
+export type HabitLogCreateItem = z.infer<typeof habitLogCreateSchema>;

@@ -139,3 +139,7 @@ export const habitCreateItemBaseSchema = z
 export const updateHabitSchema = habitCreateItemBaseSchema.omit({
     junctionIdArray: true
 }).partial();
+export const habitLogCreateSchema = z
+    .object({
+    date: z.string().trim().min(1, "date is required"),
+});

@@ -38,6 +38,7 @@ export const responseMsg = {
             CREATED_BULK: "Habits created successfully",
             UPDATE_ONE :"Habit updated successfully",
             MARKED :"Habit marked successfully",
+            UNMARKED :"Habit unmarked successfully",
             DELETED :"Habit deleted successfully",
         },
         error: {
