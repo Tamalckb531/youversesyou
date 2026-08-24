@@ -246,3 +246,22 @@ describe(`POST /api/v1/${rootRoute}/:id/mark`, () => {
         expect(body.msg).toBe(responseMsg.habit.error.NO_HABIT_ID);
     });
 });
+
+describe(`GET /api/v1/${rootRoute}/:id`, () => {
+    it("should return all habits of the test users", async () => {
+        const habitId = TEST_HABIT_IDS[1];
+        const res = await app.request(`/api/v1/${rootRoute}/${habitId}`, {
+            method: "GET",
+        })
+        expect(res.status).toBe(200);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.habit.success.GET_ONE);
+        expect(body.data.currentStreak).toBe(8);
+        expect(body.data.longestStreak).toBe(8);
+
+        expect(body.data.userId).toBe(TEST_USER.id);
+    });
+});
