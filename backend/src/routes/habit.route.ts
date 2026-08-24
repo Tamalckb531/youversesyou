@@ -8,5 +8,4 @@ habitRoute.get("/", HabitGetController);
 habitRoute.patch("/:id", HabitPatchController);
 habitRoute.delete("/:id", HabitDeleteController);
 habitRoute.get("/:id", HabitGetOneController);
-habitRoute.put("/:id/mark", HabitMarkController);
-
+habitRoute.post("/:id/mark", HabitMarkController);

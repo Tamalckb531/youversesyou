@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { app } from "../../../src";
 import { responseMsg } from "../../../src/lib/constants";
 import { TEST_USER } from "../../../src/test-data";
-import { INSERT_HABIT, TEST_HABIT_IDS, UPDATE_HABIT_BODY } from "../../../src/data/habit-test.data";
+import { INSERT_HABIT, TEST_HABIT_IDS, TEST_HABIT_LOG, UPDATE_HABIT_BODY } from "../../../src/data/habit-test.data";
 import { getDb } from "../../../src/db";
 import { habits } from "../../../src/db/schema";
 import { eq } from "drizzle-orm";
@@ -185,5 +185,64 @@ describe(`DELETE /api/v1/${rootRoute}/:id`, () => {
         expect(body.success).toBe(false);
         expect(body.msg).toBe(responseMsg.habit.error.NO_HABIT_ID);
         expect(body.data).toBeNull();
+    });
+});
+
+describe(`POST /api/v1/${rootRoute}/:id/mark`, () => {
+    it("should create a habit log", async () => {
+        const habitId = TEST_HABIT_IDS[1];
+
+        const res = await app.request(`/api/v1/${rootRoute}/${habitId}/mark`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(TEST_HABIT_LOG),
+        });
+
+        expect(res.status).toBe(201);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.habit.success.MARKED);
+    });
+
+    it("should delete the same habit log", async () => {
+        const habitId = TEST_HABIT_IDS[1];
+
+        const res = await app.request(`/api/v1/${rootRoute}/${habitId}/mark`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(TEST_HABIT_LOG),
+        });
+
+        expect(res.status).toBe(201);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(true);
+        expect(body.msg).toBe(responseMsg.habit.success.UNMARKED);
+    });
+
+    it("should return error when habit id is invalid", async () => {
+        const invalidHabitId = "aaaaaaaa-1111-4111-8111-111111111111";
+
+        const res = await app.request(`/api/v1/${rootRoute}/${invalidHabitId}/mark`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(TEST_HABIT_LOG),
+        });
+
+        expect(res.status).toBe(500);
+
+        const body = await res.json();
+
+        expect(body.success).toBe(false);
+        expect(body.msg).toBe(responseMsg.habit.error.NO_HABIT_ID);
     });
 });

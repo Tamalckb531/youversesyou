@@ -281,3 +281,7 @@ export const UPDATE_HABIT_BODY:updateHabitSchemaType = {
     name: "Updated Plan Title",
     isArchived: true,
 };
+
+export const TEST_HABIT_LOG = {
+  date: "2026-08-24",
+}
