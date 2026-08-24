@@ -327,6 +327,7 @@ export const todos = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     planId: uuid("plan_id").references(() => plans.id, { onDelete: "set null" }),
+    habitId: uuid("habit_id").references(() => habits.id, { onDelete: "set null" }),
     title: text("title").notNull(),
     description: text("description"),
     date: date("date").notNull(),
@@ -525,6 +526,7 @@ export const dbRelations = defineRelations(
       }),
       logs: r.many.habitLogs(),
       streak: r.one.habitStreaks(),
+      todos: r.many.todos()
     },
 
     habitLogs: {
@@ -561,6 +563,7 @@ export const dbRelations = defineRelations(
         from: r.plans.id,
         to: r.planRelations.childPlanId,
       }),
+      todos: r.many.todos()
     },
 
     reflectionPlans: {
@@ -602,6 +605,10 @@ export const dbRelations = defineRelations(
       plan: r.one.plans({
         from: r.todos.planId,
         to: r.plans.id,
+      }),
+      habits: r.one.habits({
+        from: r.todos.habitId,
+        to: r.habits.id,
       }),
     },
 
