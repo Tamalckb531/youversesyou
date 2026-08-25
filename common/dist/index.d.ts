@@ -212,3 +212,30 @@ export declare const habitLogCreateSchema: z.ZodObject<{
     date: z.ZodString;
 }, z.core.$strip>;
 export type HabitLogCreateItem = z.infer<typeof habitLogCreateSchema>;
+export declare const todoSourceSchema: z.ZodEnum<{
+    ai: "ai";
+    user: "user";
+}>;
+export declare const todoCreateItemBaseSchema: z.ZodObject<{
+    planId: z.ZodUUID;
+    habitId: z.ZodUUID;
+    title: z.ZodString;
+    description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    date: z.ZodDate;
+    isCompleted: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
+    source: z.ZodDefault<z.ZodOptional<z.ZodEnum<{
+        ai: "ai";
+        user: "user";
+    }>>>;
+}, z.core.$strip>;
+export declare const updateTodoSchema: z.ZodObject<{
+    title: z.ZodOptional<z.ZodString>;
+    description: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
+    date: z.ZodOptional<z.ZodDate>;
+    source: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodEnum<{
+        ai: "ai";
+        user: "user";
+    }>>>>;
+}, z.core.$strip>;
+export type TodoCreateItem = z.infer<typeof todoCreateItemBaseSchema>;
+export type TodoHabitSchemaType = z.infer<typeof updateTodoSchema>;
