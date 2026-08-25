@@ -41,4 +41,8 @@ export const TodoService = {
         return deletedTodo.id;
     },
 
+    async markedTodo(userId: string, todoId: string) {
+        const log = await TodoRepository.markTodo(todoId, userId);
+        return log;
+    }
 }
