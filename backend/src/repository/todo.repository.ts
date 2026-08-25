@@ -93,5 +93,18 @@ export const TodoRepository = {
         
         return todo;
     },
-    
+
+    async deleteTodo(todoId: string, userId: string) {
+        const [todo] = await getDb()
+            .delete(todos)
+            .where(
+                and(
+                    eq(todos.id, todoId),
+                    eq(todos.userId, userId),
+                ),
+            )
+            .returning();
+
+        return todo;
+    },    
 }
