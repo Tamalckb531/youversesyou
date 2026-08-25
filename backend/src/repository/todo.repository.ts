@@ -14,6 +14,20 @@ export const TodoRepository = {
             .where(eq(todos.userId, userId));
     },
 
+    async findOneTodoByUserId(todoId: string, userId: string) {
+        const [todo] = await getDb()
+            .select()
+            .from(todos)
+            .where(
+                and(
+                    eq(todos.id, todoId),
+                    eq(todos.userId, userId),
+                ),
+            );
+
+        return todo;
+    },
+
     async oneTodo(todoId: string, userId: string) {
         const [result] = await getDb()
             .select({
@@ -79,4 +93,5 @@ export const TodoRepository = {
         
         return todo;
     },
+    
 }
