@@ -1,6 +1,6 @@
 // user.ts
 
-import { boolean, z } from "zod";
+import { z } from "zod";
 
 //! Auth types and schemas 
 export const userStatusSchema = z.enum(["pending", "dormant", "disrupted","uncertain"]);
@@ -230,3 +230,26 @@ export const habitLogCreateSchema = z.object({
 });
  
 export type HabitLogCreateItem = z.infer<typeof habitLogCreateSchema>;
+
+//! Todo types and schemas 
+export const todoSourceSchema = z.enum(["user", "ai"]);
+export const todoCreateItemBaseSchema = z
+  .object({
+    planId: z.uuid("Plan id must contain valid uuid"),
+    habitId: z.uuid("Habit id must contain valid uuid"),
+    title: z.string().trim().min(1, "title is required").max(200),
+    description: z.string().trim().max(2000).nullable().optional(),
+    date: z.date(),
+    isCompleted: z.boolean().optional().default(false),
+    source: todoSourceSchema.optional().default("user"),
+  });
+
+export const updateTodoSchema = todoCreateItemBaseSchema.omit({
+  planId: true,
+  habitId: true,
+  isCompleted: true,
+}).partial();
+
+export type TodoCreateItem = z.infer<typeof todoCreateItemBaseSchema>;
+export type TodoHabitSchemaType = z.infer<typeof updateTodoSchema>;
+

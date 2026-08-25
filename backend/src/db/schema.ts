@@ -332,7 +332,6 @@ export const todos = pgTable(
     description: text("description"),
     date: date("date").notNull(),
     isCompleted: boolean("is_completed").notNull().default(false),
-    completedAt: timestamp("completed_at", { withTimezone: true }),
     source: todoSourceEnum("source").notNull().default("user"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
