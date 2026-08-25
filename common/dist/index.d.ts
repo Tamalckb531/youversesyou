@@ -238,4 +238,4 @@ export declare const updateTodoSchema: z.ZodObject<{
     date: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type TodoCreateItem = z.infer<typeof todoCreateItemBaseSchema>;
-export type TodoHabitSchemaType = z.infer<typeof updateTodoSchema>;
+export type updateTodoSchemaType = z.infer<typeof updateTodoSchema>;

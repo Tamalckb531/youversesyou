@@ -1,9 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../db";
 import { habits, plans, todos } from "../db/schema";
-import { PlanRepository } from "./plan.repository";
-import { HabitRepository } from "./habit.repository";
-import type { TodoCreateItem } from "@tamaldip/uvsu-common";
+import type { TodoCreateItem, updateTodoSchemaType } from "@tamaldip/uvsu-common";
 
 export type NewTodo = typeof todos.$inferInsert;
 export type Todo = typeof todos.$inferSelect;
@@ -65,5 +63,20 @@ export const TodoRepository = {
             .values({ ...item, userId })
             .returning();
         
+    },
+
+    async updateOneTodo(rows: updateTodoSchemaType, todoId: string, userId: string) {
+        const [todo] = await getDb()
+            .update(todos)
+            .set(rows)
+            .where(
+                and(
+                    eq(todos.userId, userId),
+                    eq(todos.id, todoId)
+                )
+            )
+            .returning();
+        
+        return todo;
     },
 }

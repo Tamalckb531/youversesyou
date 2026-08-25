@@ -1,4 +1,4 @@
-import type { TodoCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
+import type { TodoCreateItem, updateTodoSchemaType } from "@tamaldip/uvsu-common";
 import { responseMsg } from "../lib/constants";
 import { HabitRepository } from "../repository/habit.repository";
 import { PlanRepository } from "../repository/plan.repository";
@@ -29,7 +29,7 @@ export const TodoService = {
         return TodoRepository.createWithLinks(userId, item);
     },
 
-    async updateTodo(userId: string, todoId: string, item: updateHabitSchemaType) {
+    async updateTodo(userId: string, todoId: string, item: updateTodoSchemaType) {
         const currentHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(todoId, userId);        
         if (!currentHabit) throw new Error(responseMsg.todo.error.NO_TODO_ID);
         return TodoRepository.updateOneTodo(item, todoId, userId);
