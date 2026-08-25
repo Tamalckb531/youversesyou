@@ -7,8 +7,8 @@ export const TodoService = {
         return TodoRepository.findAllHabitsByUserId(userId);  
     },
 
-    async oneTodo(userId: string, habitId: string) {
-        const todo = await TodoRepository.oneTodo(habitId, userId);
+    async oneTodo(userId: string, todoId: string) {
+        const todo = await TodoRepository.oneTodo(todoId, userId);
         if (!todo) throw new Error(responseMsg.todo.error.NO_TODO_ID);
         return todo;
     },
@@ -27,4 +27,11 @@ export const TodoService = {
         
         return TodoRepository.createWithLinks(userId, newItem)
     },
+
+    async updateTodo(userId: string, todoId: string, item: updateHabitSchemaType) {
+        const currentHabit = await HabitRepository.findOneHabitByUserIdWithoutCon(todoId, userId);        
+        if (!currentHabit) throw new Error(responseMsg.todo.error.NO_TODO_ID);
+        return TodoRepository.updateOneTodo(item, todoId, userId);
+    },
+
 }
