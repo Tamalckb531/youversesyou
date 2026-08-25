@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../db";
-import { todos } from "../db/schema";
+import { habits, plans, todos } from "../db/schema";
 import { PlanRepository } from "./plan.repository";
 import { HabitRepository } from "./habit.repository";
 
@@ -15,23 +15,40 @@ export const TodoRepository = {
             .where(eq(todos.userId, userId));
     },
     async oneTodo(todoId: string, userId: string) {
-        const [todo] = await getDb()
-            .select()
+        const [result] = await getDb()
+            .select({
+                todo: todos,
+                plan: plans,
+                habit: habits
+            })
             .from(todos)
-            .where(and(eq(todos.id, todoId), eq(todos.userId, userId)));
-
-        if (!todo) return null;
-
-        let plan = null;
-        let habit=  null;
-
-        if (todo.planId) plan = await PlanRepository.findOnePlanByUserIdWithoutCon(todo.planId, userId);
-        if (todo.habitId) habit = await HabitRepository.findOneHabitByUserIdWithoutCon(todo.habitId, userId);
+            .leftJoin(
+                plans,
+                and(
+                    eq(todos.planId, plans.id),
+                    eq(plans.userId, userId),
+                )
+            )
+            .leftJoin(
+                habits,
+                and(
+                    eq(todos.habitId, habits.id),
+                    eq(habits.userId, userId),
+                )
+            )
+            .where(
+                and(
+                    eq(todos.id, todoId),
+                    eq(todos.userId, userId),
+                )
+            );
+        
+        if (!result) return null;
 
         return {
-            ...todo,
-            plan,
-            habit
-        };
+            ...result.todo,
+            plan: result.plan,
+            habit: result.habit,
+        }
     },
 }
