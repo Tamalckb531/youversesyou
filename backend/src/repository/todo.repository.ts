@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { getDb } from "../db";
 import { habits, plans, todos } from "../db/schema";
 import type { TodoCreateItem, updateTodoSchemaType } from "@tamaldip/uvsu-common";
@@ -107,4 +107,24 @@ export const TodoRepository = {
 
         return todo;
     },    
+
+    async markTodo(todoId: string, userId: string) {
+        const [todo] = await getDb()
+            .update(todos)
+            .set({
+                isCompleted: sql`NOT ${todos.isCompleted}`,
+            })
+            .where(
+            and(
+                eq(todos.id, todoId),
+                eq(todos.userId, userId),
+            ),
+            )
+            .returning({
+                id: todos.id,
+                marked: todos.isCompleted,
+            });
+
+        return todo ?? null;
+    }
 }

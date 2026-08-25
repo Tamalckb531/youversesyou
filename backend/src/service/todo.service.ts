@@ -44,6 +44,7 @@ export const TodoService = {
 
     async markedTodo(userId: string, todoId: string) {
         const log = await TodoRepository.markTodo(todoId, userId);
+        if (log === null) throw new Error(responseMsg.todo.error.NO_TODO_ID);
         return log;
     }
 }
