@@ -1,7 +1,7 @@
 import { and, desc, eq, gte } from "drizzle-orm";
 import { getDb } from "../db";
 import { habitLogs, habits, habitStreaks, reflectionHabits, reflections } from "../db/schema";
-import type { HabitLogCreateItem, HabitResponseDTO, updateHabitSchemaType } from "@tamaldip/uvsu-common";
+import type { HabitLogCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { responseMsg } from "../lib/constants";
 import { calculateStreaks } from "../lib/utils";
 
