@@ -1,4 +1,4 @@
-import type { TodoCreateItem } from "@tamaldip/uvsu-common";
+import type { TodoCreateItem, updateHabitSchemaType } from "@tamaldip/uvsu-common";
 import { responseMsg } from "../lib/constants";
 import { HabitRepository } from "../repository/habit.repository";
 import { PlanRepository } from "../repository/plan.repository";
@@ -23,11 +23,10 @@ export const TodoService = {
         if (item.habitId) habit = await HabitRepository.findOneHabitByUserIdWithoutCon(userId, item.habitId);
         
         if (item.planId && !plan) throw new Error(responseMsg.todo.error.INVALID_PLAN_ID)
+        if (item.planId && plan && plan.type !== "weekly") throw new Error(responseMsg.todo.error.INVALID_PLAN_TYPE)
         if (item.habitId && !habit) throw new Error(responseMsg.todo.error.INVALID_HABIT_ID)
         
-        const newItem = toNewTodo(item)
-        
-        return TodoRepository.createWithLinks(userId, newItem)
+        return TodoRepository.createWithLinks(userId, item);
     },
 
     async updateTodo(userId: string, todoId: string, item: updateHabitSchemaType) {

@@ -221,21 +221,21 @@ export declare const todoCreateItemBaseSchema: z.ZodObject<{
     habitId: z.ZodUUID;
     title: z.ZodString;
     description: z.ZodOptional<z.ZodNullable<z.ZodString>>;
-    date: z.ZodDate;
     isCompleted: z.ZodDefault<z.ZodOptional<z.ZodBoolean>>;
     source: z.ZodDefault<z.ZodOptional<z.ZodEnum<{
         ai: "ai";
         user: "user";
     }>>>;
+    date: z.ZodString;
 }, z.core.$strip>;
 export declare const updateTodoSchema: z.ZodObject<{
     title: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodOptional<z.ZodNullable<z.ZodString>>>;
-    date: z.ZodOptional<z.ZodDate>;
     source: z.ZodOptional<z.ZodDefault<z.ZodOptional<z.ZodEnum<{
         ai: "ai";
         user: "user";
     }>>>>;
+    date: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type TodoCreateItem = z.infer<typeof todoCreateItemBaseSchema>;
 export type TodoHabitSchemaType = z.infer<typeof updateTodoSchema>;

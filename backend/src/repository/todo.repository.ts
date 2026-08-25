@@ -3,6 +3,7 @@ import { getDb } from "../db";
 import { habits, plans, todos } from "../db/schema";
 import { PlanRepository } from "./plan.repository";
 import { HabitRepository } from "./habit.repository";
+import type { TodoCreateItem } from "@tamaldip/uvsu-common";
 
 export type NewTodo = typeof todos.$inferInsert;
 export type Todo = typeof todos.$inferSelect;
@@ -14,6 +15,7 @@ export const TodoRepository = {
             .from(todos)
             .where(eq(todos.userId, userId));
     },
+
     async oneTodo(todoId: string, userId: string) {
         const [result] = await getDb()
             .select({
@@ -50,5 +52,18 @@ export const TodoRepository = {
             plan: result.plan,
             habit: result.habit,
         }
+    },
+
+    async createWithLinks(
+        userId: string,
+        item: TodoCreateItem
+    ) {
+        const db = getDb();
+        
+        return await db
+            .insert(todos)
+            .values({ ...item, userId })
+            .returning();
+        
     },
 }

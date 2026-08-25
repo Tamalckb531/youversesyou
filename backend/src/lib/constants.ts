@@ -62,6 +62,7 @@ export const responseMsg = {
             INVALID_BODY: "Invalid request body",
             NO_TODO_ID: "No todo detected",
             INVALID_PLAN_ID: "This plan id link for todo do not exist or do not belong to you",
+            INVALID_PLAN_TYPE: "Only weekly plans can be connected with a todo",
             INVALID_HABIT_ID: "This habit id link for todo do not exist or do not belong to you",
         },
     },

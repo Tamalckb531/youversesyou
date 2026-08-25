@@ -161,9 +161,20 @@ export const todoCreateItemBaseSchema = z
     habitId: z.uuid("Habit id must contain valid uuid"),
     title: z.string().trim().min(1, "title is required").max(200),
     description: z.string().trim().max(2000).nullable().optional(),
-    date: z.date(),
     isCompleted: z.boolean().optional().default(false),
     source: todoSourceSchema.optional().default("user"),
+    date: z
+        .string()
+        .trim()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "date must be in YYYY-MM-DD format")
+        .refine((val) => {
+        const parsed = new Date(val + "T00:00:00Z");
+        return !isNaN(parsed.getTime());
+    }, "date is not a valid calendar date")
+        .refine((val) => {
+        const today = new Date().toISOString().slice(0, 10);
+        return val <= today;
+    }, "date cannot be in the future"),
 });
 export const updateTodoSchema = todoCreateItemBaseSchema.omit({
     planId: true,
