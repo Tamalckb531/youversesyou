@@ -34,4 +34,11 @@ export const TodoService = {
         return TodoRepository.updateOneTodo(item, todoId, userId);
     },
 
+    async deleteTodo(userId: string, todoId: string) {
+        const targetTodo = await TodoRepository.findOneTodoByUserId(todoId, userId);        
+        if (!targetTodo) throw new Error(responseMsg.todo.error.NO_TODO_ID);
+        const deletedTodo = await TodoRepository.deleteTodo(todoId, userId);
+        return deletedTodo.id;
+    },
+
 }
